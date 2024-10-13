@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Frank's AI Detector Options</title>
+</head>
+
+<body>
+    <h1>Frank's AI Detector Settings</h1>
+
+    <h2>Upload Content for AI Detection</h2>
+    <input type="file" id="upload" accept="image/*,video/*" />
+    <button id="uploadBtn">Check AI Generation</button>
+
+    <h2>Settings</h2>
+    <label for="autoCheckSelect">Automatically check images when a new page loads:</label>
+    <select id="autoCheckSelect">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+    </select>
+
+    <button id="saveBtn">Save</button> <!-- 儲存按鈕 -->
+
+    <script src="options.js"></script>
+</body>
+
+</html>
