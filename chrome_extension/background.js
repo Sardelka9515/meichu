@@ -1,86 +1,69 @@
+// 這是一個背景腳本，用於創建右鍵選單和處理右鍵選單點擊事件
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.get(["autoCheck"], (result) => {
-    const autoCheckValue = result.autoCheck;
-
-    console.log("1");
-
-    chrome.contextMenus.create({
-      id: "checkAIVideo",
-      title: "Check if video is AI generated",
-      contexts: ["video", "page"],
-    });
-
-    chrome.contextMenus.create({
-      id: "checkAIAudio",
-      title: "Check if audio is AI generated",
-      contexts: ["audio"],
-    });
-
-    // 根據 autoCheckValue 決定是否創建檢查圖片的選項
-    if (autoCheckValue === "no") {
-      chrome.contextMenus.create({
-        id: "checkAIImage",
-        title: "Check if image is AI generated",
-        contexts: ["image"], // 只對圖片有效
-      });
-      alert("I am here");
-    }
-  });
+  updateContextMenus();
 });
 
+// 監聽右鍵選單點擊事件
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  //   if (
-  //     info.menuItemId === "checkAIVideo" ||
-  //     info.menuItemId === "checkAIAudio"
-  //   ) {
-  //     const dataType = info.menuItemId === "checkAIVideo" ? "video" : "audio";
+  const dataTypeMap = {
+    checkAIImage: "image",
+    checkAIVideo: "video",
+    checkAIAudio: "audio",
+  };
 
-  //     chrome.scripting.executeScript({
-  //       target: { tabId: tab.id },
-  //       func: detectAIContent,
-  //       args: [info.srcUrl, dataType],
-  //     });
-  //   }
+  const dataType = dataTypeMap[info.menuItemId];
 
-  console.log("2");
-
-  // 檢查圖片的情況
-  if (info.menuItemId === "checkAIImage") {
-    const srcUrl = info.srcUrl; // 圖片的 URL
-    const dataType = "image"; // 資料類型
-
-    console.log("3");
-
-    // 只有當 autoCheckValue 為 "no" 時才能執行
-    if (autoCheckValue === "no") {
-      console.log("4");
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: detectAIContent,
-        args: [srcUrl, dataType],
-      });
-    } else {
-      console.log("5");
-      alert("Auto check is enabled. You cannot manually check images.");
-    }
-  } else if (
-    info.menuItemId === "checkAIVideo" ||
-    info.menuItemId === "checkAIAudio"
-  ) {
-    const dataType = info.menuItemId === "checkAIVideo" ? "video" : "audio";
-
-    console.log("6");
+  if (dataType) {
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: detectAIContent,
       args: [info.srcUrl, dataType],
     });
+    console.log("Checking", dataType, "at", info.srcUrl);
   }
 });
 
+// 監聽 autoCheck 的變化，並更新右鍵選單
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "sync" && changes.autoCheck) {
+    updateContextMenus();
+  }
+});
+
+// 更新右鍵選單
+function updateContextMenus() {
+  chrome.storage.sync.get(["autoCheck"], (result) => {
+    const autoCheckValue = result.autoCheck;
+
+    // 清除現有的右鍵選單
+    chrome.contextMenus.removeAll(() => {
+      // 創建新的右鍵選單項目
+      chrome.contextMenus.create({
+        id: "checkAIVideo",
+        title: "Check if video is AI generated",
+        contexts: ["video"],
+      });
+
+      chrome.contextMenus.create({
+        id: "checkAIAudio",
+        title: "Check if audio is AI generated",
+        contexts: ["audio"],
+      });
+
+      // 根據 autoCheckValue 決定是否創建檢查圖片的選項
+      if (autoCheckValue === "no") {
+        chrome.contextMenus.create({
+          id: "checkAIImage",
+          title: "Check if image is AI generated",
+          contexts: ["image"], // 只對圖片有效
+        });
+      }
+    });
+  });
+}
+
 // API 檢測邏輯
 async function detectAIContent(srcUrl, type) {
-  console.log("7");
   /*
   const apiEndpoint = "https://example.com/api/ai-detection";
 
@@ -103,13 +86,12 @@ async function detectAIContent(srcUrl, type) {
     }
   } catch (error) {
     alert("Error detecting AI content.");
-  }
-    */
+  } 
+  */
 
   // 模擬結果
+  console.log(srcUrl, type);
   const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
-  const message = isAI ? "AI generated" : "Not AI generated";
-  alert(message);
-
-  console.log("8");
+  const message = isAI ? "AI generated" : "not AI generated";
+  alert("The " + type + " is " + message);
 }

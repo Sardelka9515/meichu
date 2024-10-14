@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Frank's AI Content Detector",
-  "version": "0.2.8",
+  "version": "0.2.10",
   "description": "Detect if images, videos, or MP3 files are AI generated.",
   "permissions": [
     "contextMenus",
@@ -22,9 +22,9 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "assets/ext-icon.png",
-      "24": "assets/ext-icon.png",
-      "32": "assets/ext-icon.png"
+      "16": "assets/image.png",
+      "24": "assets/image.png",
+      "32": "assets/image.png"
     }
   },
   "host_permissions": ["<all_urls>"],

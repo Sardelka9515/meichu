@@ -2,7 +2,7 @@ window.onload = async function () {
   // 從 Chrome 的同步存儲中取得 autoCheck 設定
   chrome.storage.sync.get(["autoCheck"], (result) => {
     const autoCheckValue = result.autoCheck || "yes"; // 預設為 "yes" 如果尚未儲存過選項
-    console.log("autoCheckValue: ", autoCheckValue);
+    console.log("autoCheckValue in contentScript: ", autoCheckValue);
 
     // 檢查 autoCheck 設定是否為 "yes"
     if (autoCheckValue == "yes") {
@@ -17,6 +17,7 @@ window.onload = async function () {
 // 自動檢測圖片
 async function runAutoImageDetection() {
   const images = document.querySelectorAll("img");
+  const results = [];
 
   for (const img of images) {
     if (filteredImages(img)) {
@@ -49,47 +50,28 @@ async function runAutoImageDetection() {
         */
 
       // 模擬結果
-      const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
-      // img.style.margin = "10px";
+      const accuracy = Math.floor(Math.random() * 100) + 1;
+      const isAI = accuracy > 50;
+
       if (isAI) {
         img.style.border = "4px solid red"; // AI 生成圖片
       } else {
         img.style.border = "4px solid green"; // 非 AI 生成圖片
       }
 
-      // 如果圖片尺寸足夠大，則在右上角添加標籤 (因為如果圖片太小的話，標籤會過於擁擠)
-      const PRINT_OUT_MIN_WIDTH = 200;
-      const PRINT_OUT_MIN_HEIGHT = 200;
+      results.push({
+        url: srcUrl,
+        isAI: isAI,
+        accuracy: accuracy,
+      });
 
-      if (
-        img.naturalWidth > PRINT_OUT_MIN_WIDTH &&
-        img.naturalHeight > PRINT_OUT_MIN_HEIGHT
-      ) {
-        // 在圖片的右上角添加標籤
-        const resultText = document.createElement("div");
-        resultText.textContent = isAI ? "AI Generated" : "Not AI Generated";
-        resultText.style.position = "absolute"; // 絕對定位
-        resultText.style.top = "0"; // 靠近頂部
-        resultText.style.right = "0"; // 靠近右邊
-        resultText.style.backgroundColor = "rgba(255, 255, 255, 0.7)"; // 背景顏色
-        resultText.style.color = "black"; // 文字顏色
-        resultText.style.padding = "5px"; // 內邊距
-        resultText.style.borderRadius = "5px"; // 邊框圓角
-        resultText.style.zIndex = "100"; // 確保在最上層
-
-        // 設置圖片的樣式
-        img.style.position = "relative"; // 為了使結果文字絕對定位相對於圖片
-
-        // 將文字元素添加到圖片上
-        img.parentNode.style.position = "relative"; // 父元素需要相對定位
-        img.parentNode.appendChild(resultText); // 將文字元素添加到父元素中
-      }
+      // 在圖片上添加標籤
+      addLabelToImage(img, isAI);
     }
   }
 
-  // 模擬結果
-  const mockResults = generateMockResults(100);
-  addFloatingButton(mockResults);
+  // 在頁面上添加浮動按鈕
+  addFloatingButton(results);
 }
 
 // 過濾圖片的函數
@@ -123,6 +105,37 @@ function filteredImages(img) {
   return true;
 }
 
+// 在圖片上添加標籤
+function addLabelToImage(img, isAI) {
+  // 如果圖片尺寸足夠大，則在右上角添加標籤 (因為如果圖片太小的話，標籤會過於擁擠)
+  const PRINT_OUT_MIN_WIDTH = 200;
+  const PRINT_OUT_MIN_HEIGHT = 200;
+
+  if (
+    img.naturalWidth > PRINT_OUT_MIN_WIDTH &&
+    img.naturalHeight > PRINT_OUT_MIN_HEIGHT
+  ) {
+    // 在圖片的右上角添加標籤
+    const resultText = document.createElement("div");
+    resultText.textContent = isAI ? "AI Generated" : "Not AI Generated";
+    resultText.style.position = "absolute"; // 絕對定位
+    resultText.style.top = "0"; // 靠近頂部
+    resultText.style.right = "0"; // 靠近右邊
+    resultText.style.backgroundColor = "rgba(255, 255, 255, 0.7)"; // 背景顏色
+    resultText.style.color = "black"; // 文字顏色
+    resultText.style.padding = "5px"; // 內邊距
+    resultText.style.borderRadius = "5px"; // 邊框圓角
+    resultText.style.zIndex = "100"; // 確保在最上層
+
+    // 設置圖片的樣式
+    img.style.position = "relative"; // 為了使結果文字絕對定位相對於圖片
+
+    // 將文字元素添加到圖片上
+    img.parentNode.style.position = "relative"; // 父元素需要相對定位
+    img.parentNode.appendChild(resultText); // 將文字元素添加到父元素中
+  }
+}
+
 // 在頁面插入浮動按鈕和檢測結果
 function addFloatingButton(results) {
   const button = document.createElement("button");
@@ -144,6 +157,7 @@ function addFloatingButton(results) {
   document.body.appendChild(button);
 }
 
+// 顯示檢測結果的模態對話框
 function showResultsModal(results) {
   const modal = document.createElement("div");
   modal.style.position = "fixed";
@@ -175,21 +189,4 @@ function showResultsModal(results) {
 
   modal.appendChild(closeButton);
   document.body.appendChild(modal);
-}
-
-// 模擬結果生成函數
-function generateMockResults(numImages) {
-  const results = [];
-
-  for (let i = 0; i < numImages; i++) {
-    const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
-    const accuracy = Math.floor(Math.random() * 100) + 1; // 隨機生成 1% 到 100% 的準確度
-    results.push({
-      isAI: isAI,
-      accuracy: accuracy,
-      imageUrl: `https://example.com/image${i + 1}.jpg`, // 模擬圖片 URL
-    });
-  }
-
-  return results;
 }

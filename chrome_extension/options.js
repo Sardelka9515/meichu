@@ -1,63 +1,89 @@
-document.getElementById("uploadBtn").addEventListener("click", async () => {
-  const fileInput = document.getElementById("upload");
-  const file = fileInput.files[0];
+window.onload = function () {
+  // Tab switching logic
+  const navLinks = document.querySelectorAll(".tab-link");
+  const sections = document.querySelectorAll("section");
 
-  if (!file) {
-    alert("Please select a file.");
-    return;
-  }
+  navLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute("data-target");
 
-  console.log("Uploading file:", file);
+      sections.forEach((section) => section.classList.remove("active"));
+      navLinks.forEach((navLink) => navLink.classList.remove("active"));
 
-  if (file) {
-    const formData = new FormData();
-    formData.append("file", file);
+      document.getElementById(targetId).classList.add("active");
+      link.classList.add("active");
+    });
+  });
 
-    /*
-    const response = await fetch(
-      "https://example.com/api/ai-detection/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+  // Load saved settings from Chrome storage
+  chrome.storage.sync.get(["autoCheck"], (result) => {
+    const autoCheckValue = result.autoCheck || "yes";
+    document.getElementById("autoCheckSelect").value = autoCheckValue;
+  });
 
-    const result = await response.json();
-    */
+  // Drag-and-drop upload logic
+  const dropArea = document.getElementById("dropArea");
+  const fileInput = document.getElementById("fileInput");
+
+  // 監聽檔案選擇事件
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (file && file.type.startsWith("image/")) {
+      showPreview(file);
+    }
+  });
+
+  dropArea.addEventListener("click", () => fileInput.click());
+  dropArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropArea.style.backgroundColor = "rgba(74, 144, 226, 0.2)";
+  });
+
+  dropArea.addEventListener("dragleave", () => {
+    dropArea.style.backgroundColor = "";
+  });
+
+  dropArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropArea.style.backgroundColor = "";
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+    }
+  });
+
+  // Save settings logic
+  document.getElementById("saveBtn").addEventListener("click", () => {
+    const autoCheckValue = document.getElementById("autoCheckSelect").value;
+    chrome.storage.sync.set({ autoCheck: autoCheckValue }, () => {
+      alert("設置保存成功！");
+    });
+  });
+
+  // AI detection button logic
+  document.getElementById("detectBtn").addEventListener("click", async () => {
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert("Please select a file.");
+      return;
+    }
+
+    console.log("Uploading file:", file);
 
     const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
     alert(isAI ? "AI Generated" : "Not AI");
-  }
-});
-
-// document.getElementById("autoCheck").addEventListener("change", (event) => {
-//   chrome.storage.sync.set({ autoCheck: event.target.checked });
-// });
-
-// // 初始化選項狀態
-// chrome.storage.sync.get(["autoCheck"], (result) => {
-//   document.getElementById("autoCheck").checked = result.autoCheck || false;
-// });
-
-// 監聽「儲存」按鈕的點擊事件
-document.getElementById("saveBtn").addEventListener("click", () => {
-  const autoCheckValue = document.getElementById("autoCheckSelect").value;
-  console.log("autoCheckValue: ", autoCheckValue);
-
-  // 將設定儲存到 Chrome 的同步存儲
-  chrome.storage.sync.set({ autoCheck: autoCheckValue }, () => {
-    alert("Settings saved successfully!");
-  });
-});
-
-// 在頁面加載時，設置預設選項
-window.onload = function () {
-  // 從 chrome.storage.sync 獲取設定
-  chrome.storage.sync.get(["autoCheck"], (result) => {
-    const autoCheckValue = result.autoCheck || "yes"; // 如果沒有值，預設為 "yes"
-    console.log("Loaded autoCheckValue: ", autoCheckValue);
-
-    // 設置選擇的值
-    document.getElementById("autoCheckSelect").value = autoCheckValue; // 將下拉框設為相應的值
   });
 };
+
+// 新增圖片預覽的函數
+function showPreview(file) {
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    preview.src = e.target.result; // 將上傳檔案的 URL 設為圖片來源
+    preview.classList.remove("hidden"); // 顯示圖片
+    preview.style.maxWidth = "100%"; // 適應區域寬度
+    preview.style.marginTop = "1rem"; // 增加上方間距
+  };
+  reader.readAsDataURL(file); // 將檔案轉為 Data URL 格式
+}
