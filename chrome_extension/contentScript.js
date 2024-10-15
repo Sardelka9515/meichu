@@ -26,28 +26,27 @@ async function runAutoImageDetection() {
       // 印出來讓我看看
       console.log("Checking image:", srcUrl);
 
-      // 發送圖片到 API 進行檢測
 
-      /*
-      try {
-        const response = await fetch("https://example.com/api/ai-detection", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: srcUrl, type: "image" }),
-        });
-  
-        const result = await response.json();
-  
-        // 根據結果加邊框
-        if (result.isAI) {
-          img.style.border = "4px solid red"; // AI 生成圖片
-        } else {
-          img.style.border = "4px solid green"; // 非 AI 生成圖片
-        }
-      } catch (error) {
-        console.error("Error detecting image:", error);
-      }
-        */
+      // 將圖片的 URL 轉換為 Blob (模擬上傳圖片的行為)
+      fetch(images.src)
+        .then(res => res.blob())
+        .then(blob => {
+          let file = new File([blob], "image.jpg", { type: "image/jpeg" });
+
+          // 傳送到 background.js
+          chrome.runtime.sendMessage({
+            action: "sendImageToBackend",
+            imageFile: file
+          }, (response) => {
+          if (response.success) {
+            console.log("AI analysis result:", response);
+          } else {
+            //console.error("Error from AI:", response.error);
+          }
+          });
+        })
+      .catch(err => console.error("Error converting image to Blob", err));
+
 
       // 模擬結果
       const accuracy = Math.floor(Math.random() * 100) + 1;
