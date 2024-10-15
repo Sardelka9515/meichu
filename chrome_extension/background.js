@@ -62,6 +62,32 @@ function updateContextMenus() {
   });
 }
 
+
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  if (request.action === "sendImageToBackend") {
+    let formData = new FormData();
+    formData.append("img", request.imageFile);  // 接收前端的文件
+
+    fetch("http://localhost:5000/api/ai-detection", {
+      method: "POST",
+      body: formData,
+      headers: {
+        "Content-Type": "multipart/form-data"  // 必須使用form-data格式
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      sendResponse(data);  // 傳回AI模型的分析結果
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      sendResponse({ success: false, error: "Failed to communicate with the backend" });
+    });
+
+    return true;  // 表示這是異步處理
+  }
+});
+
 // API 檢測邏輯
 async function detectAIContent(srcUrl, type) {
   /*
