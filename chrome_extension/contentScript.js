@@ -41,7 +41,7 @@ async function runAutoImageDetection() {
           if (response.success) {
             console.log("AI analysis result:", response);
           } else {
-            console.error("Error from AI:", response.error);
+            //console.error("Error from AI:", response.error);
           }
           });
         })

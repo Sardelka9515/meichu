@@ -12,12 +12,14 @@ MODEL_API_URL = "http://localhost:3000/inference"
 def ai_detection():
     # 確認接收的請求中是否有 "img" 文件
     if 'img' not in request.files:
+        print("No 'img' key in request.files")  # Debug 輸出
         return jsonify({"error": "No image part", "success": False}), 400
 
     image = request.files['img']
 
     # 檢查是否有選擇文件
     if image.filename == '':
+        print("No file selected")  # Debug 輸出
         return jsonify({"error": "No selected file", "success": False}), 400
 
     # 如果有文件，則發送至模型 API

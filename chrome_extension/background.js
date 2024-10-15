@@ -71,9 +71,6 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     fetch("http://localhost:5000/api/ai-detection", {
       method: "POST",
       body: formData,
-      headers: {
-        "Content-Type": "multipart/form-data"  // 必須使用form-data格式
-      }
     })
     .then(response => response.json())
     .then(data => {
