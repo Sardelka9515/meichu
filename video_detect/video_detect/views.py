@@ -67,7 +67,7 @@ def classify_video(images: List[str]) -> List[List]:
     for imgPath in images:
         print('classifying ' + imgPath)
         result = classify_image(imgPath)
-        result['image'] = imgPath
+        result['image'] = '/' + imgPath
         results.append(result)
         print(result)
 
@@ -94,12 +94,14 @@ def video_analyzer(task: VideoTask) -> None:
 
     task.status = 'downloading'
     path = download_video(task.url, task.id, task)
+    task.url_trimmed = '/' + path.replace('\\\\', '/').replace('\\', '/')
 
     task.status = 'extracting'
     images = extract_frames(path, 20, tmpDir)
 
     task.status = 'analyzing'
     task.results = classify_video(images)
+    task.status = 'completed'
     return
 
 
@@ -111,14 +113,13 @@ def analyze_video(request: HttpRequest) -> Response:
     task = VideoTask()
     task.id = uuid.uuid4().__str__()
     task.url = request.data['url']
-    task.status = 'downloading'
+    task.status = 'queued'
     task.results = []
     task.progress = 0.0
-    task.thread = threading.Thread(target=video_analyzer, args=(task,))
     video_tasks[task.id] = task
-    task.thread.start()
-    task.thread.join()
-    return Response(task.results, status.HTTP_200_OK)
+    video_analyzer(task)
+    video_tasks.pop(task.id)
+    return Response(task.__dict__, status.HTTP_200_OK)
 
 
 @api_view(['POST'])

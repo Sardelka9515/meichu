@@ -12,8 +12,8 @@ class ImageTask():
 
 class VideoTask():
     id = "invalid"
-    status = "uploading"
+    status = "invalid"
     url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     results = []
     progress = 0.0
-    thread: threading.Thread = None
+    url_trimmed = "invalid"
