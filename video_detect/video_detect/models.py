@@ -1,20 +1,18 @@
 from django.db import models
+import threading
 
 # Create your models here.
 
-class ImageAnalysis(models.Model):
-    image = models.TextField(primary_key = True)
-    human = models.FloatField()
-    artificial = models.FloatField()
-    def __str__(self) -> str:
-        return self.image +'\n' + self.human +'\n' + self.artificial
+class ImageTask():
+    image = "invalid"
+    human = 0.0
+    artificial = 0.0
     
-class VideoAnalysis(models.Model):
-    id = models.TextField(primary_key = True)
-    status = models.TextField()
-    url = models.URLField()
-    results = models.ManyToManyField(ImageAnalysis, blank=True)
-    progress = models.FloatField()
-    def __str__(self) -> str:
-        return self.id +'\n' + self.status +'\n' + self.url +'\n' + self.progress +'\n' + self.result
+class VideoTask():
+    id = "invalid"
+    status = "uploading"
+    url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    results = []
+    progress = 0.0
+    thread: threading.Thread  = None
     
