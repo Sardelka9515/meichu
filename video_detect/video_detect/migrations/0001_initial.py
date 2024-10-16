@@ -26,7 +26,8 @@ class Migration(migrations.Migration):
                 ('status', models.TextField()),
                 ('url', models.URLField()),
                 ('progress', models.FloatField()),
-                ('results', models.ManyToManyField(blank=True, to='video_detect.imageanalysis')),
+                ('results', models.ManyToManyField(
+                    blank=True, to='video_detect.imageanalysis')),
             ],
         ),
     ]
