@@ -26,8 +26,8 @@ async function runAutoImageDetection() {
       // 印出來讓我看看
       console.log("Checking image:", srcUrl);
 
-
       // 將圖片的 URL 轉換為 Blob (模擬上傳圖片的行為)
+      /*
       fetch(images.src)
         .then(res => res.blob())
         .then(blob => {
@@ -46,7 +46,7 @@ async function runAutoImageDetection() {
           });
         })
       .catch(err => console.error("Error converting image to Blob", err));
-
+      */
 
       // 模擬結果
       const accuracy = Math.floor(Math.random() * 100) + 1;
@@ -139,6 +139,7 @@ function addLabelToImage(img, isAI) {
 }
 
 // 在頁面插入浮動按鈕和檢測結果
+/*
 function addFloatingButton(results) {
   const button = document.createElement("button");
   button.textContent = "View AI Detection Results";
@@ -158,7 +159,9 @@ function addFloatingButton(results) {
 
   document.body.appendChild(button);
 }
+*/
 
+// 在頁面插入浮動按鈕和檢測結果
 function addFloatingButton(results) {
   const button = document.createElement("button");
   button.innerHTML = `
@@ -257,189 +260,6 @@ function addFloatingButton(results) {
 }
 
 // 顯示檢測結果的模態對話框
-// function showResultsModal(results) {
-//   const modal = document.createElement("div");
-//   modal.style.position = "fixed";
-//   modal.style.top = "50%";
-//   modal.style.left = "50%";
-//   modal.style.transform = "translate(-50%, -50%)";
-//   modal.style.backgroundColor = "#fff";
-//   modal.style.padding = "20px";
-//   modal.style.zIndex = "10001";
-//   modal.style.borderRadius = "8px";
-//   modal.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
-//   modal.style.maxHeight = "400px";
-//   modal.style.overflowY = "scroll";
-
-//   results.forEach((result, index) => {
-//     const item = document.createElement("div");
-//     item.textContent = `Image ${index + 1}: ${
-//       result.isAI ? "AI Generated" : "Not AI"
-//     } (${result.accuracy}% accuracy)`;
-//     modal.appendChild(item);
-//   });
-
-//   const closeButton = document.createElement("button");
-//   closeButton.textContent = "Close";
-//   closeButton.style.marginTop = "10px";
-//   closeButton.addEventListener("click", () => {
-//     modal.remove();
-//   });
-
-//   modal.appendChild(closeButton);
-//   document.body.appendChild(modal);
-// }
-
-// 顯示檢測結果的模態對話框 (加入圖片縮略圖和展開功能)
-// function showResultsModal(results) {
-//   // Create modal container
-//   const modal = document.createElement("div");
-//   modal.style.cssText = `
-//     position: fixed;
-//     top: 0;
-//     left: 0;
-//     width: 100%;
-//     height: 100%;
-//     background-color: rgba(0, 0, 0, 0.5);
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     z-index: 10000;
-//   `;
-
-//   // Create modal content
-//   const modalContent = document.createElement("div");
-//   modalContent.style.cssText = `
-//     background-color: #fff;
-//     padding: 30px;
-//     border-radius: 10px;
-//     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-//     max-width: 600px;
-//     width: 90%;
-//     max-height: 80vh;
-//     overflow-y: auto;
-//   `;
-
-//   // Add title
-//   const title = document.createElement("h2");
-//   title.textContent = "Detection Results";
-//   title.style.cssText = `
-//     margin-top: 0;
-//     margin-bottom: 20px;
-//     color: #333;
-//     font-family: Arial, sans-serif;
-//   `;
-//   modalContent.appendChild(title);
-
-//   // Add results
-//   results.forEach((result, index) => {
-//     const item = document.createElement("div");
-//     item.style.cssText = `
-//       margin-bottom: 15px;
-//       padding: 10px;
-//       background-color: ${result.isAI ? "#ffebee" : "#e8f5e9"};
-//       border-radius: 5px;
-//       font-family: Arial, sans-serif;
-//     `;
-
-//     const itemHeader = document.createElement("div");
-//     itemHeader.style.cssText = `
-//       display: flex;
-//       justify-content: space-between;
-//       align-items: center;
-//     `;
-
-//     const resultText = document.createElement("div");
-//     resultText.innerHTML = `
-//       <strong>Image ${index + 1}:</strong>
-//       <span>${result.isAI ? "AI Generated" : "Not AI"}</span>
-//       <span style="color: #666;">(${result.accuracy}% accuracy)</span>
-//     `;
-
-//     const expandButton = document.createElement("button");
-//     expandButton.innerHTML = "&#9660;"; // Down arrow character
-//     expandButton.style.cssText = `
-//       background: none;
-//       border: none;
-//       font-size: 20px;
-//       cursor: pointer;
-//       color: #333;
-//       transition: transform 0.3s;
-//     `;
-
-//     itemHeader.appendChild(resultText);
-//     itemHeader.appendChild(expandButton);
-//     item.appendChild(itemHeader);
-
-//     const detailsContainer = document.createElement("div");
-//     detailsContainer.style.cssText = `
-//       margin-top: 10px;
-//       display: none;
-//     `;
-
-//     // Add image thumbnail
-//     const thumbnail = document.createElement("img");
-//     thumbnail.src = result.url;
-//     thumbnail.alt = "Image thumbnail";
-//     thumbnail.style.cssText = `
-//       max-width: 100%;
-//       height: auto;
-//       border-radius: 5px;
-//       margin-bottom: 10px;
-//     `;
-//     detailsContainer.appendChild(thumbnail);
-
-//     // Add detection details
-//     const details = document.createElement("p");
-//     details.textContent = result.details;
-//     detailsContainer.appendChild(details);
-
-//     item.appendChild(detailsContainer);
-
-//     expandButton.addEventListener("click", () => {
-//       if (detailsContainer.style.display === "none") {
-//         detailsContainer.style.display = "block";
-//         expandButton.style.transform = "rotate(180deg)";
-//       } else {
-//         detailsContainer.style.display = "none";
-//         expandButton.style.transform = "rotate(0deg)";
-//       }
-//     });
-
-//     modalContent.appendChild(item);
-//   });
-
-//   // Add close button
-//   const closeButton = document.createElement("button");
-//   closeButton.textContent = "Close";
-//   closeButton.style.cssText = `
-//     display: block;
-//     margin: 20px auto 0;
-//     padding: 10px 20px;
-//     background-color: #4CAF50;
-//     color: white;
-//     border: none;
-//     border-radius: 5px;
-//     cursor: pointer;
-//     font-size: 16px;
-//     transition: background-color 0.3s;
-//   `;
-//   closeButton.addEventListener("mouseover", () => {
-//     closeButton.style.backgroundColor = "#45a049";
-//   });
-//   closeButton.addEventListener("mouseout", () => {
-//     closeButton.style.backgroundColor = "#4CAF50";
-//   });
-//   closeButton.addEventListener("click", () => {
-//     modal.remove();
-//   });
-//   modalContent.appendChild(closeButton);
-
-//   modal.appendChild(modalContent);
-//   document.body.appendChild(modal);
-// }
-
-// 顯示檢測結果的模態對話框 (多了按下背景可以關掉Modelbox)
 function showResultsModal(results) {
   // Create modal container
   const modal = document.createElement("div");
@@ -617,36 +437,36 @@ checkForYouTubeVideos();
 const observer = new MutationObserver(checkForYouTubeVideos);
 observer.observe(document.body, { childList: true, subtree: true });
 
-// API 檢測邏輯 (原本在background.js  只需要在當前網頁上執行，不需要和背景腳本交互)
-async function detectAIContent(srcUrl, type) {
-  /*
-  const apiEndpoint = "https://example.com/api/ai-detection";
+// // API 檢測邏輯 (原本在background.js  只需要在當前網頁上執行，不需要和背景腳本交互)
+// async function detectAIContent(srcUrl, type) {
+//   /*
+//   const apiEndpoint = "https://example.com/api/ai-detection";
 
-  try {
-    const response = await fetch(apiEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: srcUrl, type }),
-    });
+//   try {
+//     const response = await fetch(apiEndpoint, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ url: srcUrl, type }),
+//     });
 
-    const result = await response.json();
+//     const result = await response.json();
 
-    if (result.success) {
-      const message = result.isAI
-        ? `AI generated (${result.accuracy}% accurate)`
-        : "Not AI generated";
-      alert(message); // 簡單彈出結果
-    } else {
-      alert("Failed to detect.");
-    }
-  } catch (error) {
-    alert("Error detecting AI content.");
-  } 
-  */
+//     if (result.success) {
+//       const message = result.isAI
+//         ? `AI generated (${result.accuracy}% accurate)`
+//         : "Not AI generated";
+//       alert(message); // 簡單彈出結果
+//     } else {
+//       alert("Failed to detect.");
+//     }
+//   } catch (error) {
+//     alert("Error detecting AI content.");
+//   }
+//   */
 
-  // 模擬結果
-  console.log(srcUrl, type);
-  const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
-  const message = isAI ? "AI generated" : "not AI generated";
-  alert("The " + type + " is " + message);
-}
+//   // 模擬結果
+//   console.log(srcUrl, type);
+//   const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
+//   const message = isAI ? "AI generated" : "not AI generated";
+//   alert("The " + type + " is " + message);
+// }

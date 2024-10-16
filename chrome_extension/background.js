@@ -121,39 +121,39 @@ function updateYouTubeContextMenu(hasYouTubeVideos) {
   }
 }
 
-// // API 檢測邏輯
-// async function detectAIContent(srcUrl, type) {
-//   /*
-//   const apiEndpoint = "https://example.com/api/ai-detection";
+// API 檢測邏輯
+async function detectAIContent(srcUrl, type) {
+  /*
+  const apiEndpoint = "https://example.com/api/ai-detection";
 
-//   try {
-//     const response = await fetch(apiEndpoint, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ url: srcUrl, type }),
-//     });
+  try {
+    const response = await fetch(apiEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: srcUrl, type }),
+    });
 
-//     const result = await response.json();
+    const result = await response.json();
 
-//     if (result.success) {
-//       const message = result.isAI
-//         ? `AI generated (${result.accuracy}% accurate)`
-//         : "Not AI generated";
-//       alert(message); // 簡單彈出結果
-//     } else {
-//       alert("Failed to detect.");
-//     }
-//   } catch (error) {
-//     alert("Error detecting AI content.");
-//   }
-//   */
+    if (result.success) {
+      const message = result.isAI
+        ? `AI generated (${result.accuracy}% accurate)`
+        : "Not AI generated";
+      alert(message); // 簡單彈出結果
+    } else {
+      alert("Failed to detect.");
+    }
+  } catch (error) {
+    alert("Error detecting AI content.");
+  }
+  */
 
-//   // 模擬結果
-//   console.log(srcUrl, type);
-//   const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
-//   const message = isAI ? "AI generated" : "not AI generated";
-//   alert("The " + type + " is " + message);
-// }
+  // 模擬結果
+  console.log(srcUrl, type);
+  const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
+  const message = isAI ? "AI generated" : "not AI generated";
+  alert("The " + type + " is " + message);
+}
 
 // 獲取 YouTube 影片 URL
 function getYouTubeVideoUrl() {
