@@ -1,7 +1,8 @@
 import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
+import io
 
 app = Flask(__name__)
 CORS(app)
@@ -15,11 +16,6 @@ def ai_detection():
     if 'img' not in request.files:
         print("No 'img' key in request.files")  # Debug 輸出
         return jsonify({"error": "No image part", "success": False}), 400
-    def preprocess(img):
-        if img.mode == 'RGBA':  # 如果圖片是 RGBA 格式
-            img = img.convert('RGB')  # 將圖片轉換為 RGB
-        # 在這裡繼續進行其他預處理步驟
-        return img
 
     image = request.files['img']
 
@@ -28,8 +24,24 @@ def ai_detection():
         print("No file selected")  # Debug 輸出
         return jsonify({"error": "No selected file", "success": False}), 400
 
+    # 嘗試將圖像加載到 PIL 中並進行預處理
+    try:
+        img = Image.open(image.stream)
+        img = preprocess(img)  # 調用預處理函數
+    except UnidentifiedImageError:
+        print("Cannot identify image file")  # Debug 輸出
+        return jsonify({"error": "Invalid image format or corrupt file", "success": False}), 400
+    except Exception as e:
+        print(f"Unexpected error while opening image: {e}")
+        return jsonify({"error": "Error processing image", "success": False}), 500
+
     # 如果有文件，則發送至模型 API
-    files = {'img': (image.filename, image.stream, image.mimetype)}  # 使用 file object 發送
+    # 將圖像保存到內存中的二進制流
+    img_byte_array = io.BytesIO()
+    img.save(img_byte_array, format='JPEG')  # 根據需要選擇合適的格式
+    img_byte_array.seek(0)  # 重置流的位置
+
+    files = {'img': (image.filename, img_byte_array, 'image/jpeg')}  # 使用 file object 發送
 
     try:
         # 發送請求至模型 API
@@ -44,6 +56,12 @@ def ai_detection():
         return jsonify({"error": "Unexpected error", "success": False}), 500
 
     return jsonify(result)
+
+def preprocess(img):
+    if img.mode == 'RGBA':  # 如果圖片是 RGBA 格式
+        img = img.convert('RGB')  # 將圖片轉換為 RGB
+    # 在這裡繼續進行其他預處理步驟
+    return img
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
