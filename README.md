@@ -25,16 +25,25 @@ Api key is required for all endpoints
 - Body: parameters as json
   - url: url of the video to download
   - async: returns immediatly and execute analysis in the background if set to true, use `/result/video?id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` to get the progress and result
+  - download_start: the start time to download video in seconds
+  - download_end: the end time to download video in seconds, will be `truncated to start_time` + `max_download_duration` (default 10)
+  - sample_count: how many frames to extract from downloaded video for analysis (default 20, max 50)
   - Example:
     ```json
     {
         "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "async": true
+        "async": true,
+        "download_start": 10,
+        "download_end": 20,
+        "sample_count": 50
     }
     ```
 - Returns: The video analysis task in json format, and the results if async is not set
   - id: id of the executing task which can be used to query status and results later
   - url: url used to download the video
+  - download_start: the start time to download video in seconds
+  - download_end: the end time to download video in seconds, will be `truncated to start_time` + `max_download_duration` (default 60)
+  - sample_count: how many frames to extract from downloaded video for analysis (default 20, max 50)
   - status: `queued` | `downloading` | `extracting` | `analyzing` | `completed`
   - progress: progress of the current stage
   - results: analysis results of each extracted frame, as an array
@@ -47,6 +56,9 @@ Api key is required for all endpoints
   {
       "id": "df8c8b1b-960c-485f-b00e-10d19a20b138",
       "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "download_start": 56,
+      "download_end": 59,
+      "sample_count": 50,
       "status": "completed",
       "results": [
         {
