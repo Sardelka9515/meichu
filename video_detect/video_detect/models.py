@@ -11,9 +11,9 @@ class ImageTask():
 
 
 class VideoTask():
-    id = "invalid"
-    status = "invalid"
+    id: str = None
+    status: str = None
     url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     results = []
     progress = 0.0
-    url_trimmed = "invalid"
+    url_trimmed: str = None

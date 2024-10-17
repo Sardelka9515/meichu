@@ -26,4 +26,5 @@ urlpatterns = [
 
     path('analyze/image', analyze_image, name='analyze-image'),
     path('analyze/video', analyze_video, name='analyze-video'),
+    path('result/video', video_result, name='video-result'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
