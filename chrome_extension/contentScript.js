@@ -26,27 +26,36 @@ async function runAutoImageDetection() {
       // 印出來讓我看看
       console.log("Checking image:", srcUrl);
 
-      // 將圖片的 URL 轉換為 Blob (模擬上傳圖片的行為)
-      /*
-      fetch(images.src)
-        .then(res => res.blob())
-        .then(blob => {
-          let file = new File([blob], "image.jpg", { type: "image/jpeg" });
+      try {
+        // 將圖片的 URL 轉換為 Blob
+        const response = await fetch(srcUrl);
+        const blob = await response.blob();
 
-          // 傳送到 background.js
-          chrome.runtime.sendMessage({
-            action: "sendImageToBackend",
-            imageFile: file
-          }, (response) => {
-          if (response.success) {
-            console.log("AI analysis result:", response);
-          } else {
-            //console.error("Error from AI:", response.error);
-          }
-          });
-        })
-      .catch(err => console.error("Error converting image to Blob", err));
-      */
+        // 使用 FileReader 將 Blob 轉換為 Base64
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          const base64data = reader.result;
+
+          // 傳送 Base64 編碼的圖片到 background.js
+          chrome.runtime.sendMessage(
+            {
+              action: "sendImageToBackend",
+              base64Image: base64data, // 傳送 Base64 編碼圖片
+              fileName: "image.jpg", // 給圖片取一個名稱
+            },
+            (response) => {
+              if (response.success) {
+                console.log("AI analysis result:", response.result);
+              } else {
+                console.error("Error from AI:", response.error);
+              }
+            }
+          );
+        };
+      } catch (error) {
+        console.error("Error converting image to Blob", error);
+      }
 
       // 模擬結果
       const accuracy = Math.floor(Math.random() * 100) + 1;

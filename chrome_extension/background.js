@@ -83,27 +83,42 @@ function updateContextMenus() {
   });
 }
 
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-  if (request.action === "sendImageToBackend") {
-    let formData = new FormData();
-    formData.append("img", request.imageFile); // 接收前端的文件
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "sendImageToBackend") {
+    const base64Image = message.base64Image;
+    const fileName = message.fileName;
 
-    fetch("http://localhost:5000/api/ai-detection", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse(data); // 傳回AI模型的分析結果
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        sendResponse({
-          success: false,
-          error: "Failed to communicate with the backend",
+    // 將 Base64 圖片轉換為 Blob
+    fetch(base64Image)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const formData = new FormData();
+        const file = new File([blob], fileName, { type: blob.type });
+
+        // 在 FormData 中附加圖片文件
+        formData.append("img", file);
+        fetch("http://localhost:5000/api/ai-detection", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) =>{
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // 假設伺服器回應 JSON 格式
+        })
+          .then((data) => {
+            if (data.success) {
+             sendResponse({ success: true, result: data });
+            } else {
+              sendResponse({ success: false, error: data.error });
+            }
+        })
+        .catch((error) => {
+          console.error("Error uploading image to API:", error);
+          sendResponse({ success: false, error: error.message });
         });
       });
-
     return true; // 表示這是異步處理
   }
 });

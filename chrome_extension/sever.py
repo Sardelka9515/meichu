@@ -1,6 +1,7 @@
 import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from PIL import Image
 
 app = Flask(__name__)
 CORS(app)
@@ -14,6 +15,11 @@ def ai_detection():
     if 'img' not in request.files:
         print("No 'img' key in request.files")  # Debug 輸出
         return jsonify({"error": "No image part", "success": False}), 400
+    def preprocess(img):
+        if img.mode == 'RGBA':  # 如果圖片是 RGBA 格式
+            img = img.convert('RGB')  # 將圖片轉換為 RGB
+        # 在這裡繼續進行其他預處理步驟
+        return img
 
     image = request.files['img']
 
