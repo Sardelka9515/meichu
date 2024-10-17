@@ -1,4 +1,3 @@
-
 from transformers import pipeline
 import yt_dlp
 import cv2
@@ -79,7 +78,13 @@ def download_video(url: str, id: str, task: VideoTask) -> str:
         # Save to 'uploads' directory with title as filename
         'outtmpl': f'uploads/{task.id}.%(ext)s',
         'progress_hooks': [progress_hook],
+        'format': 'bv*[vcodec^=avc][height<=1080]+ba[ext=m4a]/b[ext=mp4][height<=1080]/b',
+        'force_keyframes_at_cuts': True
     }
+
+    if task.download_start != None and task.download_end != None and task.download_start < task.download_end:
+        ydl_opts["download_ranges"] = lambda info_dict, ydl: [
+            {'start_time': task.download_start, 'end_time': task.download_end}]
 
     # Use yt-dlp to download video to uploads directory and get info
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -99,7 +104,7 @@ def video_analyzer(task: VideoTask) -> None:
 
     task.status = 'extracting'
     task.progress = 0.0
-    images = extract_frames(path, 20, tmpDir, task)
+    images = extract_frames(path, task.sample_count, tmpDir, task)
 
     task.status = 'analyzing'
     task.progress = 0.0

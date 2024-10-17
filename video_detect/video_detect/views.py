@@ -18,6 +18,8 @@ video_tasks_lock = threading.Lock()
 shutil.rmtree('uploads', ignore_errors=True)
 video_tasks = {}
 video_tasks_queue = []
+max_download_duration = 60.0
+max_sample_count = 50
 
 
 def video_task_processor():
@@ -53,6 +55,22 @@ def analyze_video(request: HttpRequest) -> Response:
     task = VideoTask()
     task.id = uuid.uuid4().__str__()
     task.url = request.data['url']
+    if 'download_start' in request.data and 'download_end' in request.data:
+        task.download_start = request.data['download_start']
+        task.download_end = request.data['download_end']
+    else:
+        task.download_start = 0
+        task.download_end = max_download_duration
+
+    if task.download_end - task.download_start > max_download_duration:
+        task.download_end = task.download_start + max_download_duration
+
+    if 'sample_count' in request.data:
+        task.sample_count = request.data['sample_count']
+
+    if task.sample_count > max_sample_count:
+        task.sample_count = max_sample_count
+
     task.status = 'queued'
     task.results = []
     task.progress = 0.0
