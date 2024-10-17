@@ -1,5 +1,20 @@
 https://hackmd.io/xx0IKcKET2GIk09rHw7fBQ
 
+# Installation
+## video_detect
+```bash
+conda create -n video_detect python=3.12
+conda activate video_detect
+cd video_detect
+pip install -r requirements.txt
+# For linux
+# sudo apt-get install python3-opencv
+# Install ffmpeg (linux). For Windows, install via scoop or download pre-built binaries and add to path
+# sudo apt-get install ffmpeg
+
+python manage.py runserver
+```
+
 # API endpoints
 
 ## backend(video_detect)
