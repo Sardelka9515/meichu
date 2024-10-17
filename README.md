@@ -26,7 +26,7 @@ Api key is required for all endpoints
   - url: url of the video to download
   - async: returns immediatly and execute analysis in the background if set to true, use `/result/video?id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` to get the progress and result
   - download_start: the start time to download video in seconds
-  - download_end: the end time to download video in seconds, will be `truncated to start_time` + `max_download_duration` (default 10)
+  - download_end: the end time to download video in seconds, will be `truncated to start_time` + `max_download_duration` (default 60)
   - sample_count: how many frames to extract from downloaded video for analysis (default 20, max 50)
   - Example:
     ```json
