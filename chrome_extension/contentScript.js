@@ -73,6 +73,7 @@ async function runAutoImageDetection() {
 
                   // 在圖片上添加標籤
                   addLabelToImage(img, isAI);
+                  updateFloatingButton(results);
                 } else {
                   console.error("Error from AI:", response.error);
                 }
@@ -158,9 +159,16 @@ function addLabelToImage(img, isAI) {
   }
 }
 
+function updateFloatingButton(results) {
+  badge = document.getElementById("ai-detection-result-badge");
+  badge.textContent = results.length;
+}
+
 // 在頁面插入浮動按鈕和檢測結果
 function addFloatingButton(results) {
   const button = document.createElement("button");
+  button.id = "ai-detection-result-button";
+
   button.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -217,7 +225,7 @@ function addFloatingButton(results) {
 
   // Add a badge to show the number of results
   const badge = document.createElement("span");
-  badge.textContent = results.length;
+  badge.id = "ai-detection-result-badge";
   badge.style.cssText = `
     position: absolute;
     top: -8px;
