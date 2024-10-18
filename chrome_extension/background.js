@@ -1,12 +1,99 @@
-// 這是一個背景腳本，用於創建右鍵選單和處理右鍵選單點擊事件
+// 當擴展安裝時，更新右鍵選單
 chrome.runtime.onInstalled.addListener(() => {
   updateContextMenus();
 });
+
+// 偵測 AI 內容
+async function detectAIContent(srcUrl, type) {
+  const apiEndpoint = "https://meichu-video.sausagee.party/analyze/image"; // 替換為您的 API URL
+  const headers = {
+    "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將您的 API key 加入這裡
+  };
+
+  // 準備發送的數據
+  const body = {
+    srcUrl,
+    type,
+  };
+
+  try {
+    // 發送請求到後端 API
+    const response = await fetch(apiEndpoint, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(body),
+    });
+
+    // 檢查響應是否成功
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    // 解析 JSON 數據
+    const data = await response.json();
+    
+    // 假設 API 返回的數據中包含 accuracy 和 isAI
+    const artificial = data.artificial; // 來自 API 的準確度
+    const human = data.human; // 來自 API 的 AI 判斷結果
+    const isAI = artificial > human;
+    const message = isAI ? "AI generated" : "not AI generated";
+
+    // 輸出結果到控制台
+    console.log(srcUrl, type, accuracy, isAI, message);
+    
+    // 顯示結果
+    alert("The " + type + " is " + message);
+
+    // 如果需要顯示模態框，這裡可以調用 showWarningModal
+    showWarningModal(type, accuracy, message);
+    
+  } catch (error) {
+    console.error("Error detecting AI content:", error);
+    alert("Error detecting content. Please try again later.");
+  }
+}
 
 // 監聽來自內容腳本的消息
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "updateYouTubeMenu") {
     updateYouTubeContextMenu(request.hasYouTubeVideos);
+  }
+  
+  if (request.action === "sendImageToBackend") {
+    const base64Image = request.base64Image;
+    const fileName = request.fileName;
+
+    // 將 Base64 圖片轉換為 Blob
+    fetch(base64Image)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const formData = new FormData();
+        const file = new File([blob], fileName, { type: blob.type });
+        formData.append("image", file);
+
+        return fetch("https://meichu-video.sausagee.party/analyze/image", {
+          method: "POST",
+          headers: {
+            "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將你的 API key 加入這裡
+          },
+          body: formData,
+        });
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        sendResponse({ success: true, result: data });
+      })
+      .catch((error) => {
+        console.error("Error uploading image to API:", error);
+        sendResponse({ success: false, error: error.message });
+      });
+
+    return true; // 保持消息通道開啟
   }
 });
 
@@ -38,13 +125,6 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   }
 });
 
-// 監聽 autoCheck 的變化，並更新右鍵選單
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "sync" && changes.autoCheck) {
-    updateContextMenus();
-  }
-});
-
 // 更新右鍵選單
 function updateContextMenus() {
   chrome.storage.sync.get(["autoCheck"], (result) => {
@@ -52,7 +132,6 @@ function updateContextMenus() {
 
     // 清除現有的右鍵選單
     chrome.contextMenus.removeAll(() => {
-      // 創建新的右鍵選單項目
       chrome.contextMenus.create({
         id: "checkAIVideo",
         title: "Check if video is AI generated",
@@ -70,10 +149,11 @@ function updateContextMenus() {
         chrome.contextMenus.create({
           id: "checkAIImage",
           title: "Check if image is AI generated",
-          contexts: ["image"], // 只對圖片有效
+          contexts: ["image"],
         });
       }
 
+      // YouTube 右鍵選單
       // chrome.contextMenus.create({
       //   id: "checkAIYouTube",
       //   title: "Check if YouTube video is AI generated",
@@ -82,56 +162,6 @@ function updateContextMenus() {
     });
   });
 }
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "sendImageToBackend") {
-    const base64Image = message.base64Image;
-    const fileName = message.fileName;
-
-    // 將 Base64 圖片轉換為 Blob
-    fetch(base64Image)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const formData = new FormData();
-        const file = new File([blob], fileName, { type: blob.type });
-
-        // 在 FormData 中附加圖片文件
-        formData.append("img", file);
-
-        // 加入 API key 到 headers
-        return fetch("http://localhost:5000/api/analyze/image", {
-          method: "POST",
-          headers: {
-            "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將你的 API key 加入這裡
-          },
-          body: formData,
-        });
-      })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json(); // 假設伺服器回應 JSON 格式
-      })
-      .then((data) => {
-        if (data.success) {
-          sendResponse({ success: true, result: data });
-        } else {
-          sendResponse({ success: false, error: data.error });
-        }
-      })
-      .catch((error) => {
-        console.error("Error uploading image to API:", error);
-        sendResponse({ success: false, error: error.message });
-      });
-
-    // **必須 return true 來保持異步通道**
-    return true; 
-  }
-});
-
-
-
 
 // 更新 YouTube 上下文菜單
 function updateYouTubeContextMenu(hasYouTubeVideos) {
@@ -146,47 +176,7 @@ function updateYouTubeContextMenu(hasYouTubeVideos) {
   }
 }
 
-// API 檢測邏輯
-async function detectAIContent(srcUrl, type) {
-  /*
-  const apiEndpoint = "https://example.com/api/ai-detection";
-
-  try {
-    const response = await fetch(apiEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: srcUrl, type }),
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      const message = result.isAI
-        ? `AI generated (${result.accuracy}% accurate)`
-        : "Not AI generated";
-      alert(message); // 簡單彈出結果
-    } else {
-      alert("Failed to detect.");
-    }
-  } catch (error) {
-    alert("Error detecting AI content.");
-  }
-  */
-
-  console.log("I am in detectAIContent");
-  // 模擬結果
-  const accuracy = Math.floor(Math.random() * 100); // 隨機生成準確度
-  const isAI = accuracy < 50; // 隨機生成是否為 AI 生成，50% 機率
-  const message = isAI ? "AI generated" : "not AI generated";
-  console.log(srcUrl, type, accuracy, isAI, message);
-  alert("The " + type + " is " + message);
-  // console.log(accuracy, isAI, message);
-  // showWarningModal(type, accuracy, message);
-  // console.log("2");
-  // showWarningModal(type, accuracy, message);
-}
-
-// 獲取 YouTube 影片 URL (進不去 detectAIContent())
+// 獲取 YouTube 影片 URL
 function getYouTubeVideoUrl() {
   const youtubeIframes = document.querySelectorAll(
     'iframe[src*="youtube.com"], iframe[src*="youtu.be"]'
@@ -195,16 +185,14 @@ function getYouTubeVideoUrl() {
     const iframe = youtubeIframes[0];
     const src = iframe.src;
     const videoId = src.match(
-      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:embed\/|watch\?v=)?([^&]+)/
+      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:embed\/|watch\?v=)?([^&]+)/i
     );
     if (videoId && videoId[1]) {
       const videoUrl = `https://www.youtube.com/watch?v=${videoId[1]}`;
 
       console.log("YouTube video URL:", videoUrl);
       detectAIContent(videoUrl, "video");
-
-      // 有問題有問題有問題有問題 你媽死了
-      console.log("I am here");
+      analyzeVideo(videoUrl);
     } else {
       console.log("無法獲取 YouTube 影片 URL");
     }
@@ -212,6 +200,47 @@ function getYouTubeVideoUrl() {
     console.log("此頁面上沒有找到嵌入的 YouTube 影片");
   }
 }
+
+// 分析 YouTube 影片
+function analyzeVideo(videoUrl) {
+  const apiEndpoint = "http://localhost:5000/api/analyze/video"; // 後端 API URL
+  const headers = {
+    "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將你的 API key 加入這裡
+  };
+
+  fetch(apiEndpoint, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify({ videoUrl })
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        console.log("Analysis result:", data);
+      } else {
+        console.error("Analysis failed:", data.error);
+      }
+    })
+    .catch(error => {
+      console.error("Error analyzing video:", error);
+    });
+}
+
+/*
+// 偵測 AI 內容
+async function detectAIContent(srcUrl, type) {
+  // 模擬結果
+  const accuracy = Math.floor(Math.random() * 100); // 隨機生成準確度
+  const isAI = accuracy < 50; // 隨機生成是否為 AI 生成，50% 機率
+  const message = isAI ? "AI generated" : "not AI generated";
+  console.log(srcUrl, type, accuracy, isAI, message);
+  alert("The " + type + " is " + message);
+}*/
 
 // Model Box 函數 (有問題)
 function showWarningModal(contentType, accuracy, message) {

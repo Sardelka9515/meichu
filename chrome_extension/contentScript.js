@@ -48,6 +48,34 @@ async function runAutoImageDetection() {
               if (response) {
                 if (response.success) {
                   console.log("AI analysis result:", response.result);
+                  
+                  // 假設 API 返回的數據中包含 accuracy 和 isAI
+                  const artificial = Math.round(response.result.artificial*100); // 來自 API 的準確度
+                  const human = Math.round(response.result.human*100); // 來自 API 的 AI 判斷結果
+                  const isAI = artificial > human;
+                  const AIpercent = Math.round(artificial*100/(human+artificial));
+                  const message = isAI ? "AI generated" : "not AI generated";
+                  const details = human+"% human <br> "+artificial+"% artificial";
+                  
+
+                  if (isAI) {
+                    img.style.border = "4px solid red"; // AI 生成圖片
+                  } else {
+                    img.style.border = "4px solid green"; // 非 AI 生成圖片
+                  }
+
+                  results.push({
+                    AIpercent: AIpercent,
+                    url: srcUrl,
+                    isAI: isAI,
+                    artificial: artificial,
+                    human: human,
+                    details: details
+                  });
+
+                  // 在圖片上添加標籤
+                  addLabelToImage(img, isAI);
+                  updateFloatingButton(results);
                 } else {
                   console.error("Error from AI:", response.error);
                 }
@@ -62,26 +90,8 @@ async function runAutoImageDetection() {
       }
 
       // 模擬結果
-      const accuracy = Math.floor(Math.random() * 100) + 1;
-      const isAI = accuracy > 50;
-      const details =
-        "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Iste eius quisquam, doloribus delectus molestiae vero ipsum in laborum ipsa at eos praesentium consectetur dignissimos sint saepe voluptate minima dolorem. Eligendi quaerat dicta temporibus cumque, saepe quos, rem exercitationem, iusto dolorum voluptate esse. Corrupti vero earum eum modi incidunt consectetur quisquam!";
-
-      if (isAI) {
-        img.style.border = "4px solid red"; // AI 生成圖片
-      } else {
-        img.style.border = "4px solid green"; // 非 AI 生成圖片
-      }
-
-      results.push({
-        url: srcUrl,
-        isAI: isAI,
-        accuracy: accuracy,
-        details: details,
-      });
-
-      // 在圖片上添加標籤
-      addLabelToImage(img, isAI);
+      //const accuracy = Math.floor(Math.random() * 100) + 1;
+      //const isAI = accuracy > 50;
     }
   }
 
@@ -151,9 +161,16 @@ function addLabelToImage(img, isAI) {
   }
 }
 
+function updateFloatingButton(results) {
+  badge = document.getElementById("ai-detection-result-badge");
+  badge.textContent = results.length;
+}
+
 // 在頁面插入浮動按鈕和檢測結果
 function addFloatingButton(results) {
   const button = document.createElement("button");
+  button.id = "ai-detection-result-button";
+
   button.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -210,7 +227,7 @@ function addFloatingButton(results) {
 
   // Add a badge to show the number of results
   const badge = document.createElement("span");
-  badge.textContent = results.length;
+  badge.id = "ai-detection-result-badge";
   badge.style.cssText = `
     position: absolute;
     top: -8px;
@@ -322,7 +339,7 @@ function showResultsModal(results) {
     resultText.innerHTML = `
       <strong>Image ${index + 1}:</strong> 
       <span>${result.isAI ? "AI Generated" : "Not AI"}</span> 
-      <span style="color: #666;">(${result.accuracy}% accuracy)</span>
+      <span style="color: #666;">(${result.AIpercent}%)</span>
     `;
 
     const expandButton = document.createElement("button");
@@ -360,7 +377,7 @@ function showResultsModal(results) {
 
     // Add detection details
     const details = document.createElement("p");
-    details.textContent = result.details;
+    details.innerHTML = result.details;
     detailsContainer.appendChild(details);
 
     item.appendChild(detailsContainer);
