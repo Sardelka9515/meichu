@@ -1,65 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frank's AI Content Detector</title>
     <link rel="stylesheet" href="globals.css" />
-    <style>
-      /* 此處插入 CSS */
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="main">
-      <!-- 插入圖片，作為工具的標誌或圖示 -->
-      <img class="DALLE" src="assets/image.png" alt="AI Detector Logo"/>
+      <div class="div">
+        <img src="assets/image.png" />
 
-      <div class="frame">
-        <div class="auto-dected-on">
-          <div class="toggle" id="autoDetectToggle"></div> <!-- 自動檢測圖片的開關 -->
+        <div class="overlap">
+          <div class="auto-frame">
+            <div class="AUTO-DECTED-IMAGES">AUTO DECTED<br />IMAGES</div>
+          </div>
+          <div class="auto-dected-on"><div class="toggle"></div></div>
         </div>
-        <div class="AUTO-DECTED-IMAGES">AUTO DETECTED<br />IMAGES</div> <!-- 自動檢測圖片的文字標籤 -->
-      </div>
-
-      <div class="overlap-group">
-        <div class="manual-dected-video">
-          <div class="toggle-2" id="manualDetectToggle"></div> <!-- 手動檢測影片的開關 -->
+        <div class="overlap-group">
+          <div class="manual-frame">
+            <div class="MANUAL-DECTED-VIDEO">MANUAL DECTED<br />VIDEO</div>
+          </div>
+          <div class="manual-dected-video"><div class="toggle-2"></div></div>
         </div>
-        <div class="MANUAL-DECTED-VIDEO">MANUAL DETECTED<br />VIDEO</div> <!-- 手動檢測影片的文字標籤 -->
-      </div>
-
-      <div class="frame-2">
-        <div class="text-wrapper">UPLOAD FILE FOR DETECTION</div>
-        <div class="add-file-button" id="uploadFileButton">
-          <div class="icons-add"></div> <!-- 文件上傳的圖標 -->
-          <div class="text-wrapper-2">ADD A FILE</div> <!-- 文件上傳按鈕的文字 -->
+        <div class="frame">
+          <div class="text-wrapper">UPLOAD FILE FOR DETECTION</div>
+          <div class="add-file-button">
+            <div class="icons-add"></div>
+            <div class="text-wrapper-2">ADD A FILE</div>
+          </div>
         </div>
-        <input type="file" id="fileInput" style="display:none;" />
+        <div class="property-off-wrapper">
+          <div class="property-off"><div class="toggle-2"></div></div>
+        </div>
+        <div class="div-wrapper">
+          <div class="toggle-wrapper"><div class="toggle"></div></div>
+        </div>
       </div>
     </div>
-
-    <script>
-      // 通用開關切換功能
-      const toggleElements = document.querySelectorAll('.toggle, .toggle-2');
-      toggleElements.forEach(toggle => {
-        toggle.addEventListener('click', function () {
-          this.classList.toggle('active');
-        });
-      });
-
-      // 文件上傳按鈕功能
-      const uploadFileButton = document.getElementById('uploadFileButton');
-      const fileInput = document.getElementById('fileInput');
-      uploadFileButton.addEventListener('click', function() {
-        fileInput.click(); // 觸發文件選擇對話框
-      });
-
-      fileInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-          alert(`File "${file.name}" uploaded successfully!`);
-        }
-      });
-    </script>
   </body>
 </html>
