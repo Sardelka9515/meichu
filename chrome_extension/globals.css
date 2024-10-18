@@ -1,0 +1,181 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+
+/* 基本樣式處理 */
+* {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}
+
+/* 處理按鈕的focus樣式 */
+button:focus-visible {
+  outline: 2px solid #4a90e2 !important;
+  outline: -webkit-focus-ring-color auto 5px !important;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* 通用的按鈕樣式 */
+button {
+  border: none;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+/* 設定動畫效果供開關使用 */
+.toggle, .toggle-2 {
+  transition: background-color 0.3s ease, left 0.3s ease;
+}
+
+/* 主佈局 */
+.main {
+  background-color: #ebf57e;
+  display: flex;
+  flex-direction: column; /* 改為column方便佈局 */
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 20px;
+}
+
+/* 調整div的大小和佈局 */
+.main .div {
+  background-color: #ebf57e;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  width: 400px;
+  height: auto; /* 動態調整高度 */
+  position: relative;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 圖片樣式 */
+.main .DALLE {
+  width: 111px;
+  height: 111px;
+  margin-bottom: 20px;
+  object-fit: cover;
+}
+
+/* 自動檢測區塊 */
+.main .frame {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  background-color: #305a7b;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.main .AUTO-DECTED-IMAGES {
+  font-family: "Inter-Medium", Helvetica;
+  font-size: 15px;
+  color: #ffffff;
+}
+
+/* 手動檢測區塊 */
+.main .overlap-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  background-color: #305a7b;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.main .MANUAL-DECTED-VIDEO {
+  font-family: "Inter-Medium", Helvetica;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+/* 開關樣式 */
+.main .auto-dected-on, .main .manual-dected-video, .main .property-off, .main .toggle-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.main .toggle, .main .toggle-2 {
+  width: 40px;
+  height: 20px;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+}
+
+.main .toggle::before, .main .toggle-2::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background-color: white;
+  border-radius: 50%;
+  top: 1px;
+  left: 1px;
+  transition: left 0.3s ease;
+}
+
+.main .toggle.active::before, .main .toggle-2.active::before {
+  left: 21px;
+  background-color: #4CAF50;
+}
+
+/* 文件上傳區域 */
+.main .frame-2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  background-color: #305a7b;
+  border-radius: 8px;
+  color: white;
+}
+
+.main .add-file-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.main .add-file-button:hover {
+  background-color: #2980b9;
+}
+
+.main .icons-add {
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+}
