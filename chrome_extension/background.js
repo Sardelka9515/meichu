@@ -120,9 +120,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ success: false, error: error.message });
       });
 
-    return true; // 保持 message channel 開啟，等待非同步處理完成
+    // **必須 return true 來保持異步通道**
+    return true; 
   }
 });
+
 
 
 // 更新 YouTube 上下文菜單
