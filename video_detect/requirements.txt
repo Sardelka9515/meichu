@@ -1,0 +1,10 @@
+torch
+transformers
+pillow
+gradio
+opencv-python
+django
+django-filter
+djangorestframework
+markdown
+yt_dlp
