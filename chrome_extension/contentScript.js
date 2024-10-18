@@ -139,29 +139,6 @@ function addLabelToImage(img, isAI) {
 }
 
 // 在頁面插入浮動按鈕和檢測結果
-/*
-function addFloatingButton(results) {
-  const button = document.createElement("button");
-  button.textContent = "View AI Detection Results";
-  button.style.position = "fixed";
-  button.style.top = "10px";
-  button.style.left = "10px";
-  button.style.zIndex = "10000";
-  button.style.padding = "10px";
-  button.style.backgroundColor = "#007bff";
-  button.style.color = "#fff";
-  button.style.border = "none";
-  button.style.cursor = "pointer";
-
-  button.addEventListener("click", () => {
-    showResultsModal(results);
-  });
-
-  document.body.appendChild(button);
-}
-*/
-
-// 在頁面插入浮動按鈕和檢測結果
 function addFloatingButton(results) {
   const button = document.createElement("button");
   button.innerHTML = `
@@ -436,37 +413,3 @@ checkForYouTubeVideos();
 // 監聽 DOM 變化
 const observer = new MutationObserver(checkForYouTubeVideos);
 observer.observe(document.body, { childList: true, subtree: true });
-
-// // API 檢測邏輯 (原本在background.js  只需要在當前網頁上執行，不需要和背景腳本交互)
-// async function detectAIContent(srcUrl, type) {
-//   /*
-//   const apiEndpoint = "https://example.com/api/ai-detection";
-
-//   try {
-//     const response = await fetch(apiEndpoint, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ url: srcUrl, type }),
-//     });
-
-//     const result = await response.json();
-
-//     if (result.success) {
-//       const message = result.isAI
-//         ? `AI generated (${result.accuracy}% accurate)`
-//         : "Not AI generated";
-//       alert(message); // 簡單彈出結果
-//     } else {
-//       alert("Failed to detect.");
-//     }
-//   } catch (error) {
-//     alert("Error detecting AI content.");
-//   }
-//   */
-
-//   // 模擬結果
-//   console.log(srcUrl, type);
-//   const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
-//   const message = isAI ? "AI generated" : "not AI generated";
-//   alert("The " + type + " is " + message);
-// }
