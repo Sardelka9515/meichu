@@ -20,9 +20,9 @@ python manage.py runserver
 ## backend(video_detect)
 Api key is required for all endpoints
 `X-API-KEY: aWxvdmVzYXVzYWdl`
-- /analyze/image
-- /analyze/video
-- /result/video
+- /api/analyze/image
+- /api/analyze/video
+- /api/result/video?id=<task_id>
 
 ### /analyze/image 
 - Method: POST

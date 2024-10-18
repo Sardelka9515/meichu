@@ -11,14 +11,15 @@
     "downloads",
     "tabs"
   ],
-  "host_permissions": [
-    "http://localhost/*",  
-    "<all_urls>"           
-  ],
+  "host_permissions": ["http://localhost/*", "<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["youtubeContentScript.js"]
+    },
     {
       "matches": ["<all_urls>"],
       "js": ["contentScript.js"]

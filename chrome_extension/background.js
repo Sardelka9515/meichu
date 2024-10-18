@@ -97,31 +97,41 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         // 在 FormData 中附加圖片文件
         formData.append("img", file);
-        fetch("http://localhost:5000/api/ai-detection", {
+
+        // 加入 API key 到 headers
+        return fetch("http://localhost:5000/api/analyze/image", {
           method: "POST",
+          headers: {
+            "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將你的 API key 加入這裡
+          },
           body: formData,
-        })
-          .then((response) =>{
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json(); // 假設伺服器回應 JSON 格式
-        })
-          .then((data) => {
-            if (data.success) {
-             sendResponse({ success: true, result: data });
-            } else {
-              sendResponse({ success: false, error: data.error });
-            }
-        })
-        .catch((error) => {
-          console.error("Error uploading image to API:", error);
-          sendResponse({ success: false, error: error.message });
         });
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json(); // 假設伺服器回應 JSON 格式
+      })
+      .then((data) => {
+        if (data.success) {
+          sendResponse({ success: true, result: data });
+        } else {
+          sendResponse({ success: false, error: data.error });
+        }
+      })
+      .catch((error) => {
+        console.error("Error uploading image to API:", error);
+        sendResponse({ success: false, error: error.message });
       });
-    return true; // 表示這是異步處理
+
+    // **必須 return true 來保持異步通道**
+    return true; 
   }
 });
+
+
+
 
 // 更新 YouTube 上下文菜單
 function updateYouTubeContextMenu(hasYouTubeVideos) {
