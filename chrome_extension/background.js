@@ -8,35 +8,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "updateYouTubeMenu") {
     updateYouTubeContextMenu(request.hasYouTubeVideos);
   }
-  // 新加上的部分
-  if (request.action === "checkYouTubeAI") {
-    checkYoutubeVideoIsThere();
-  }
 });
-
-function checkYoutubeVideoIsThere() {
-  console.log("Received checkYouTubeAI request", request);
-  const videoId = request.videoId;
-  const startTime = request.startTime;
-  const endTime = request.endTime;
-
-  // 這裡應該調用您的 AI 檢測 API
-  // 為了演示，我們使用一個模擬的檢測結果
-  const isAI = Math.random() < 0.5; // 50% 的機會被判定為 AI 生成
-  const accuracy = Math.floor(Math.random() * 100);
-
-  setTimeout(() => {
-    const response = {
-      isAI: isAI,
-      accuracy: accuracy,
-      message: isAI ? "可能是 AI 生成的" : "可能不是 AI 生成的",
-    };
-    console.log("Sending response", response);
-    sendResponse(response);
-  }, 0); // 模擬 API 調用的延遲
-
-  return true; // 表示我們將異步發送回應
-}
 
 // 監聽右鍵選單點擊事件
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -127,34 +99,39 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         formData.append("img", file);
 
         // 加入 API key 到 headers
-        return fetch("http://localhost:5000/api/ai-detection", {
+        return fetch("http://localhost:5000/api/analyze/image", {
           method: "POST",
           headers: {
             "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將你的 API key 加入這裡
           },
           body: formData,
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json(); // 假設伺服器回應 JSON 格式
-          })
-          .then((data) => {
-            if (data.success) {
-              sendResponse({ success: true, result: data });
-            } else {
-              sendResponse({ success: false, error: data.error });
-            }
-          })
-          .catch((error) => {
-            console.error("Error uploading image to API:", error);
-            sendResponse({ success: false, error: error.message });
-          });
+        });
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json(); // 假設伺服器回應 JSON 格式
+      })
+      .then((data) => {
+        if (data.success) {
+          sendResponse({ success: true, result: data });
+        } else {
+          sendResponse({ success: false, error: data.error });
+        }
+      })
+      .catch((error) => {
+        console.error("Error uploading image to API:", error);
+        sendResponse({ success: false, error: error.message });
       });
-    return true; // 表示這是異步處理
+
+    // **必須 return true 來保持異步通道**
+    return true; 
   }
 });
+
+
+
 
 // 更新 YouTube 上下文菜單
 function updateYouTubeContextMenu(hasYouTubeVideos) {
