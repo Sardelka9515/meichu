@@ -45,10 +45,14 @@ async function runAutoImageDetection() {
               fileName: "image.jpg", // 給圖片取一個名稱
             },
             (response) => {
-              if (response.success) {
-                console.log("AI analysis result:", response.result);
+              if (response) {
+                if (response.success) {
+                  console.log("AI analysis result:", response.result);
+                } else {
+                  console.error("Error from AI:", response.error);
+                }
               } else {
-                console.error("Error from AI:", response.error);
+                console.error("No response received from background script.");
               }
             }
           );

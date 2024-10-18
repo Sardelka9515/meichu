@@ -97,31 +97,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         // 在 FormData 中附加圖片文件
         formData.append("img", file);
-        fetch("http://localhost:5000/api/ai-detection", {
+        return fetch("http://localhost:5000/api/ai-detection", {
           method: "POST",
           body: formData,
-        })
-          .then((response) =>{
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json(); // 假設伺服器回應 JSON 格式
-        })
-          .then((data) => {
-            if (data.success) {
-             sendResponse({ success: true, result: data });
-            } else {
-              sendResponse({ success: false, error: data.error });
-            }
-        })
-        .catch((error) => {
-          console.error("Error uploading image to API:", error);
-          sendResponse({ success: false, error: error.message });
         });
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json(); // 假設伺服器回應 JSON 格式
+      })
+      .then((data) => {
+        if (data.success) {
+          sendResponse({ success: true, result: data });
+        } else {
+          sendResponse({ success: false, error: data.error });
+        }
+      })
+      .catch((error) => {
+        console.error("Error uploading image to API:", error);
+        sendResponse({ success: false, error: error.message });
       });
-    return true; // 表示這是異步處理
+
+    return true; // 保持 message channel 開啟，等待非同步處理完成
   }
 });
+
 
 // 更新 YouTube 上下文菜單
 function updateYouTubeContextMenu(hasYouTubeVideos) {
