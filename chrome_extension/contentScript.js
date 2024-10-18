@@ -50,12 +50,13 @@ async function runAutoImageDetection() {
                   console.log("AI analysis result:", response.result);
                   
                   // 假設 API 返回的數據中包含 accuracy 和 isAI
-                  const artificial = response.result.artificial; // 來自 API 的準確度
-                  const human = response.result.human; // 來自 API 的 AI 判斷結果
+                  const artificial = Math.round(response.result.artificial*100); // 來自 API 的準確度
+                  const human = Math.round(response.result.human*100); // 來自 API 的 AI 判斷結果
                   const isAI = artificial > human;
+                  const AIpercent = Math.round(artificial*100/(human+artificial));
                   const message = isAI ? "AI generated" : "not AI generated";
-                  const details =
-                  "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Iste eius quisquam, doloribus delectus molestiae vero ipsum in laborum ipsa at eos praesentium consectetur dignissimos sint saepe voluptate minima dolorem. Eligendi quaerat dicta temporibus cumque, saepe quos, rem exercitationem, iusto dolorum voluptate esse. Corrupti vero earum eum modi incidunt consectetur quisquam!";
+                  const details = human+"% human <br> "+artificial+"% artificial";
+                  
 
                   if (isAI) {
                     img.style.border = "4px solid red"; // AI 生成圖片
@@ -64,11 +65,12 @@ async function runAutoImageDetection() {
                   }
 
                   results.push({
+                    AIpercent: AIpercent,
                     url: srcUrl,
                     isAI: isAI,
                     artificial: artificial,
                     human: human,
-                    details: details,
+                    details: details
                   });
 
                   // 在圖片上添加標籤
@@ -337,8 +339,7 @@ function showResultsModal(results) {
     resultText.innerHTML = `
       <strong>Image ${index + 1}:</strong> 
       <span>${result.isAI ? "AI Generated" : "Not AI"}</span> 
-      <span style="color: #666;">(${Math.round(result.artificial)}% artificial)</span>
-      <span style="color: #666;">(${Math.round(result.human)}% human)</span>
+      <span style="color: #666;">(${result.AIpercent}%)</span>
     `;
 
     const expandButton = document.createElement("button");
@@ -376,7 +377,7 @@ function showResultsModal(results) {
 
     // Add detection details
     const details = document.createElement("p");
-    details.textContent = result.details;
+    details.innerHTML = result.details;
     detailsContainer.appendChild(details);
 
     item.appendChild(detailsContainer);
