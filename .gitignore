@@ -162,3 +162,4 @@ cython_debug/
 #.idea/
 uploads/
 *.sqlite3
+video_detect/video_detect.tar
