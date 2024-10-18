@@ -48,6 +48,31 @@ async function runAutoImageDetection() {
               if (response) {
                 if (response.success) {
                   console.log("AI analysis result:", response.result);
+                  
+                  // 假設 API 返回的數據中包含 accuracy 和 isAI
+                  const artificial = response.result.artificial; // 來自 API 的準確度
+                  const human = response.result.human; // 來自 API 的 AI 判斷結果
+                  const isAI = artificial > human;
+                  const message = isAI ? "AI generated" : "not AI generated";
+                  const details =
+                  "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Iste eius quisquam, doloribus delectus molestiae vero ipsum in laborum ipsa at eos praesentium consectetur dignissimos sint saepe voluptate minima dolorem. Eligendi quaerat dicta temporibus cumque, saepe quos, rem exercitationem, iusto dolorum voluptate esse. Corrupti vero earum eum modi incidunt consectetur quisquam!";
+
+                  if (isAI) {
+                    img.style.border = "4px solid red"; // AI 生成圖片
+                  } else {
+                    img.style.border = "4px solid green"; // 非 AI 生成圖片
+                  }
+
+                  results.push({
+                    url: srcUrl,
+                    isAI: isAI,
+                    artificial: artificial,
+                    human: human,
+                    details: details,
+                  });
+
+                  // 在圖片上添加標籤
+                  addLabelToImage(img, isAI);
                 } else {
                   console.error("Error from AI:", response.error);
                 }
@@ -62,26 +87,8 @@ async function runAutoImageDetection() {
       }
 
       // 模擬結果
-      const accuracy = Math.floor(Math.random() * 100) + 1;
-      const isAI = accuracy > 50;
-      const details =
-        "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Iste eius quisquam, doloribus delectus molestiae vero ipsum in laborum ipsa at eos praesentium consectetur dignissimos sint saepe voluptate minima dolorem. Eligendi quaerat dicta temporibus cumque, saepe quos, rem exercitationem, iusto dolorum voluptate esse. Corrupti vero earum eum modi incidunt consectetur quisquam!";
-
-      if (isAI) {
-        img.style.border = "4px solid red"; // AI 生成圖片
-      } else {
-        img.style.border = "4px solid green"; // 非 AI 生成圖片
-      }
-
-      results.push({
-        url: srcUrl,
-        isAI: isAI,
-        accuracy: accuracy,
-        details: details,
-      });
-
-      // 在圖片上添加標籤
-      addLabelToImage(img, isAI);
+      //const accuracy = Math.floor(Math.random() * 100) + 1;
+      //const isAI = accuracy > 50;
     }
   }
 
@@ -322,7 +329,8 @@ function showResultsModal(results) {
     resultText.innerHTML = `
       <strong>Image ${index + 1}:</strong> 
       <span>${result.isAI ? "AI Generated" : "Not AI"}</span> 
-      <span style="color: #666;">(${result.accuracy}% accuracy)</span>
+      <span style="color: #666;">(${Math.round(result.artificial)}% artificial)</span>
+      <span style="color: #666;">(${Math.round(result.human)}% human)</span>
     `;
 
     const expandButton = document.createElement("button");
