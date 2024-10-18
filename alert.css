@@ -1,0 +1,53 @@
+/* 視窗樣式 */
+.frame {
+    position: absolute;
+    top: 20px; /* 保持在圖片上方 */
+    left: 50%;
+    transform: translateX(-50%); /* 水平居中 */
+    width: 70%; /* 寬度設為圖片的70% */
+    background-color: rgba(255, 255, 255, 0.9); /* 白色背景，稍微透明 */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+    z-index: 100; /* 保持在頂層 */
+    text-align: center;
+  }
+  
+  /* 查看詳情的字體大小 */
+  .text-wrapper {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  
+  /* 警示文字字體大小 */
+  .text-wrapper-2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ec5151; /* 紅色，突出警告信息 */
+    margin-bottom: 10px;
+  }
+  
+  /* 真實性百分比的字體大小 */
+  .text-wrapper-3 {
+    font-size: 18px;
+    font-weight: 400;
+    color: #59584f;
+  }
+  
+  /* 圖片的容器設置 */
+  .view {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    text-align: center;
+  }
+  
+  /* 圖片的樣式設置 */
+  .vector {
+    width: 100%; /* 圖片寬度為父容器的100% */
+    height: auto;
+    display: block;
+  }
+  
