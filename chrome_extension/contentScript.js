@@ -19,6 +19,9 @@ async function runAutoImageDetection() {
   const images = document.querySelectorAll("img");
   const results = [];
 
+  // 在頁面上添加浮動按鈕
+  addFloatingButton(results);
+
   for (const img of images) {
     if (filteredImages(img)) {
       const srcUrl = img.src;
@@ -94,9 +97,6 @@ async function runAutoImageDetection() {
       //const isAI = accuracy > 50;
     }
   }
-
-  // 在頁面上添加浮動按鈕
-  addFloatingButton(results);
 }
 
 // 過濾圖片的函數
