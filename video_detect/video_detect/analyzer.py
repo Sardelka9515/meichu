@@ -1,15 +1,16 @@
-from transformers import pipeline
+from transformers import pipeline, Pipeline
 import yt_dlp
 import cv2
 import pathlib
 from typing import List
 from .models import *
 
-pipe = pipeline("image-classification", "umm-maybe/AI-image-detector")
+video_detect = pipeline("image-classification", "umm-maybe/AI-image-detector")
+sdxl_detect = pipeline("image-classification", "Organika/sdxl-detector")
 
 
-def classify_image(image):
-    outputs = pipe(image)
+def classify_image(image: str, model: Pipeline) -> dict:
+    outputs = model(image)
     results = {}
     for result in outputs:
         results[result['label']] = result['score']
@@ -57,7 +58,7 @@ def classify_video(images: List[str], task: VideoTask) -> List[List]:
     total = len(images)
     for imgPath in images:
         print('classifying ' + imgPath)
-        result = classify_image(imgPath)
+        result = classify_image(imgPath, video_detect)
         result['image'] = '/' + imgPath
         results.append(result)
         print(result)
