@@ -10,7 +10,20 @@ CORS(app)
 # 設定模型 API URL
 MODEL_API_URL = "http://localhost:3000/inference"
 
+# 設定 API key（直接硬編碼）
+API_KEY = "aWxvdmVzYXVzYWdl"
+
+# 驗證 API key 的裝飾器
+def require_api_key(func):
+    def wrapper(*args, **kwargs):
+        api_key = request.headers.get('X-API-KEY')
+        if api_key != API_KEY:
+            return jsonify({"error": "Unauthorized: API key is missing or incorrect", "success": False}), 403
+        return func(*args, **kwargs)
+    return wrapper
+
 @app.route('/api/ai-detection', methods=['POST'])
+@require_api_key  # 加入 API key 驗證
 def ai_detection():
     # 確認接收的請求中是否有 "img" 文件
     if 'img' not in request.files:

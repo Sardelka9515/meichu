@@ -1,41 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frank's AI Content Detector</title>
     <link rel="stylesheet" href="globals.css" />
     <link rel="stylesheet" href="style.css" />
+    <style>
+      /* 這裡是額外的樣式，保持程式碼可維護 */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+      }
+      
+      .main {
+        width: 300px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .frame, .overlap-group, .frame-2, .property-off-wrapper, .div-wrapper {
+        margin-bottom: 20px;
+      }
+
+      .toggle, .toggle-2 {
+        width: 40px;
+        height: 20px;
+        background-color: #ccc;
+        border-radius: 10px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .toggle::before, .toggle-2::before {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        background-color: white;
+        border-radius: 50%;
+        top: 1px;
+        left: 1px;
+        transition: left 0.3s;
+      }
+
+      .toggle.active::before, .toggle-2.active::before {
+        left: 21px;
+        background-color: #4CAF50;
+      }
+
+      .add-file-button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .add-file-button:hover {
+        background-color: #2980b9;
+      }
+
+      .icons-add {
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .text-wrapper, .text-wrapper-2 {
+        font-size: 14px;
+      }
+
+    </style>
   </head>
   <body>
     <div class="main">
       <div class="div">
-        <img
-          class="DALLE"
-          src="img/DALL-e-2024-10-11-02-23-41-a-minimalist-and-elegant-browser-plugin-icon-designed-to-detect-deepfake-technology-the-icon-features-a-central-magnifying-glass-symbolizing-detectio-1.png"
-        />
+        <!-- 插入圖片，作為工具的標誌或圖示 -->
+        <img class="DALLE" src="img/DALL-e-2024-10-11-02-23-41-a-minimalist-and-elegant-browser-plugin-icon-designed-to-detect-deepfake-technology-the-icon-features-a-central-magnifying-glass-symbolizing-detectio-1.png" alt="AI Detector Logo"/>
+
+        <!-- 自動檢測圖片區域 -->
         <div class="frame">
-          <div class="auto-dected-on"><div class="toggle"></div></div>
-          <div class="AUTO-DECTED-IMAGES">AUTO DECTED<br />IMAGES</div>
+          <div class="auto-dected-on">
+            <div class="toggle" id="autoDetectToggle"></div> <!-- 自動檢測圖片的開關 -->
+          </div>
+          <div class="AUTO-DECTED-IMAGES">AUTO DETECTED<br />IMAGES</div> <!-- 自動檢測圖片的文字標籤 -->
         </div>
+
+        <!-- 手動檢測影片區域 -->
         <div class="overlap-group">
           <div class="MANUAL-DECTED-VIDEO-wrapper">
-            <div class="MANUAL-DECTED-VIDEO">MANUAL DECTED<br />VIDEO</div>
+            <div class="MANUAL-DECTED-VIDEO">MANUAL DETECTED<br />VIDEO</div> <!-- 手動檢測影片的文字標籤 -->
           </div>
-          <div class="manual-dected-video"><div class="toggle-2"></div></div>
+          <div class="manual-dected-video">
+            <div class="toggle-2" id="manualDetectToggle"></div> <!-- 手動檢測影片的開關 -->
+          </div>
         </div>
+
+        <!-- 文件上傳按鈕區域 -->
         <div class="frame-2">
           <div class="text-wrapper">UPLOAD FILE FOR DETECTION</div>
-          <div class="add-file-button">
-            <div class="icons-add"></div>
-            <div class="text-wrapper-2">ADD A FILE</div>
+          <div class="add-file-button" id="uploadFileButton">
+            <div class="icons-add"></div> <!-- 文件上傳的圖標 -->
+            <div class="text-wrapper-2">ADD A FILE</div> <!-- 文件上傳按鈕的文字 -->
+          </div>
+          <input type="file" id="fileInput" style="display:none;" />
+        </div>
+
+        <!-- 額外的開關區域 -->
+        <div class="property-off-wrapper">
+          <div class="property-off">
+            <div class="toggle-2" id="propertyOffToggle"></div> <!-- 額外功能的開關 -->
           </div>
         </div>
-        <div class="property-off-wrapper">
-          <div class="property-off"><div class="toggle-2"></div></div>
-        </div>
+
+        <!-- 通用開關區域 -->
         <div class="div-wrapper">
-          <div class="toggle-wrapper"><div class="toggle"></div></div>
+          <div class="toggle-wrapper">
+            <div class="toggle" id="commonToggle"></div> <!-- 通用的開關 -->
+          </div>
         </div>
+
       </div>
     </div>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+      // 通用開關切換功能
+      const toggleElements = document.querySelectorAll('.toggle, .toggle-2');
+      toggleElements.forEach(toggle => {
+        toggle.addEventListener('click', function () {
+          this.classList.toggle('active');
+        });
+      });
+
+      // 文件上傳按鈕功能
+      const uploadFileButton = document.getElementById('uploadFileButton');
+      const fileInput = document.getElementById('fileInput');
+      uploadFileButton.addEventListener('click', function() {
+        fileInput.click(); // 觸發文件選擇對話框
+      });
+
+      fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          alert(`File "${file.name}" uploaded successfully!`);
+        }
+      });
+    </script>
   </body>
 </html>

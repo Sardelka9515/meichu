@@ -125,8 +125,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         // 在 FormData 中附加圖片文件
         formData.append("img", file);
-        fetch("http://localhost:5000/api/ai-detection", {
+
+        // 加入 API key 到 headers
+        return fetch("http://localhost:5000/api/ai-detection", {
           method: "POST",
+          headers: {
+            "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將你的 API key 加入這裡
+          },
           body: formData,
         })
           .then((response) => {
