@@ -97,20 +97,24 @@ def download_video(url: str, id: str, task: VideoTask) -> str:
 def video_analyzer(task: VideoTask) -> None:
     print(f'Analyzing video: {task.id}, {task.url}')
     tmpDir = f'uploads/{task.id}'
+    try:
+        task.status = 'downloading'
+        task.progress = 0.0
+        path = download_video(task.url, task.id, task)
+        task.url_trimmed = '/' + path.replace('\\\\', '/').replace('\\', '/')
 
-    task.status = 'downloading'
-    task.progress = 0.0
-    path = download_video(task.url, task.id, task)
-    task.url_trimmed = '/' + path.replace('\\\\', '/').replace('\\', '/')
+        task.status = 'extracting'
+        task.progress = 0.0
+        images = extract_frames(path, task.sample_count, tmpDir, task)
 
-    task.status = 'extracting'
-    task.progress = 0.0
-    images = extract_frames(path, task.sample_count, tmpDir, task)
-
-    task.status = 'analyzing'
-    task.progress = 0.0
-    task.results = classify_video(images, task)
-    task.progress = 1.0
-    task.status = 'completed'
-    print(f'Analyzed video: {task.id}, {task.url}')
+        task.status = 'analyzing'
+        task.progress = 0.0
+        task.results = classify_video(images, task)
+        task.progress = 1.0
+        task.status = 'completed'
+        print(f'Analyzed video: {task.id}, {task.url}')
+    except Exception as e:
+        task.status = 'error'
+        task.error = str(e)
+        print(f'Error analyzing video: {task.id}, {task.url}, {e}')
     return
