@@ -138,8 +138,20 @@ window.onload = function () {
       }
     );
   });
+
+  const youtubeUrl = getQueryParameter("youtubeUrl");
+  const currentTime = getQueryParameter("currentTime");
+
+  if (youtubeUrl) {
+    document.getElementById("youtubeLink").value =
+      decodeURIComponent(youtubeUrl); // 填充输入框
+  }
+  if (currentTime) {
+    document.getElementById("startTime").value = formatTime(currentTime); // 填充播放时间
+  }
 };
 
+<<<<<<< HEAD
 // 檢查 YouTube 連結格式是否正確的函式
 function isValidYouTubeLink(url) {
   const pattern = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
@@ -164,6 +176,22 @@ function convertFileToBase64(file) {
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
+=======
+// 解析 URL 查询参数
+function getQueryParameter(name) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+// 格式化时间为 HH:mm:ss
+function formatTime(seconds) {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${hrs.toString().padStart(2, "0")}:${mins
+    .toString()
+    .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+>>>>>>> ad83590 (a)
 }
 
 function dropAreaClick() {

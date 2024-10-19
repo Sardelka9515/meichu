@@ -9,7 +9,9 @@
     "storage",
     "scripting",
     "downloads",
-    "tabs"
+    "tabs",
+    "http://*/",
+    "https://*/"
   ],
   "host_permissions": ["http://localhost/*", "<all_urls>"],
   "background": {
