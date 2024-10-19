@@ -191,6 +191,90 @@ function updateFloatingButton(results) {
 }
 
 // 在頁面插入浮動按鈕和檢測結果
+// function addFloatingButton(results) {
+//   const button = document.createElement("button");
+//   button.id = "ai-detection-result-button";
+
+//   button.innerHTML = `
+//     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+//       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+//       <circle cx="12" cy="12" r="3"></circle>
+//     </svg>
+//     <span>AI Detection Results</span>
+//   `;
+
+//   button.style.cssText = `
+//     position: fixed;
+//     bottom: 20px;
+//     right: 20px;
+//     z-index: 10000;
+//     padding: 12px 20px;
+//     background-color: #4CAF50;
+//     color: #fff;
+//     border: none;
+//     border-radius: 30px;
+//     cursor: pointer;
+//     font-family: Arial, sans-serif;
+//     font-size: 14px;
+//     font-weight: bold;
+//     display: flex;
+//     align-items: center;
+//     gap: 8px;
+//     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+//     transition: all 0.3s ease;
+//   `;
+
+//   // Hover effect
+//   button.addEventListener("mouseover", () => {
+//     button.style.backgroundColor = "#45a049";
+//     button.style.boxShadow = "0 4px 15px rgba(0, 0, 0, 0.3)";
+//   });
+
+//   button.addEventListener("mouseout", () => {
+//     button.style.backgroundColor = "#4CAF50";
+//     button.style.boxShadow = "0 2px 10px rgba(0, 0, 0, 0.2)";
+//   });
+
+//   // Click effect
+//   button.addEventListener("mousedown", () => {
+//     button.style.transform = "scale(0.95)";
+//   });
+
+//   button.addEventListener("mouseup", () => {
+//     button.style.transform = "scale(1)";
+//   });
+
+//   // Show results modal on click
+//   button.addEventListener("click", () => {
+//     showResultsModal(results);
+//   });
+
+//   document.body.appendChild(button);
+
+//   // Optional: Add animation to draw attention
+//   setTimeout(() => {
+//     button.style.animation = "pulse 2s infinite";
+//   }, 1000);
+
+//   // Add the keyframes for the pulse animation
+//   const style = document.createElement("style");
+//   style.textContent = `
+//     @keyframes pulse {
+//       0% {
+//         box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+//       }
+//       70% {
+//         box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+//       }
+//       100% {
+//         box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+//       }
+//     }
+//   `;
+//   document.head.appendChild(style);
+// }
+
+// 在頁面插入浮動按鈕和檢測結果 (可以拖曳移動按鈕)
 function addFloatingButton(results) {
   const button = document.createElement("button");
   button.id = "ai-detection-result-button";
@@ -213,7 +297,7 @@ function addFloatingButton(results) {
     color: #fff;
     border: none;
     border-radius: 30px;
-    cursor: pointer;
+    cursor: move;
     font-family: Arial, sans-serif;
     font-size: 14px;
     font-weight: bold;
@@ -222,6 +306,7 @@ function addFloatingButton(results) {
     gap: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
+    user-select: none;
   `;
 
   // Hover effect
@@ -235,18 +320,41 @@ function addFloatingButton(results) {
     button.style.boxShadow = "0 2px 10px rgba(0, 0, 0, 0.2)";
   });
 
-  // Click effect
-  button.addEventListener("mousedown", () => {
-    button.style.transform = "scale(0.95)";
+  // Dragging functionality
+  let isDragging = false;
+  let startX, startY, startLeft, startTop;
+
+  button.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startLeft = button.offsetLeft;
+    startTop = button.offsetTop;
+    button.style.cursor = "grabbing";
   });
 
-  button.addEventListener("mouseup", () => {
-    button.style.transform = "scale(1)";
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
+    const deltaX = e.clientX - startX;
+    const deltaY = e.clientY - startY;
+
+    button.style.left = `${startLeft + deltaX}px`;
+    button.style.top = `${startTop + deltaY}px`;
+    button.style.right = "auto";
+    button.style.bottom = "auto";
+  });
+
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+    button.style.cursor = "move";
   });
 
   // Show results modal on click
-  button.addEventListener("click", () => {
-    showResultsModal(results);
+  button.addEventListener("click", (e) => {
+    if (!isDragging) {
+      showResultsModal(results);
+    }
   });
 
   document.body.appendChild(button);
@@ -275,6 +383,167 @@ function addFloatingButton(results) {
 }
 
 // 顯示檢測結果的模態對話框
+// function showResultsModal(results) {
+//   // Create modal container
+//   const modal = document.createElement("div");
+//   modal.style.cssText = `
+//     position: fixed;
+//     top: 0;
+//     left: 0;
+//     width: 100%;
+//     height: 100%;
+//     background-color: rgba(0, 0, 0, 0.5);
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     z-index: 10000;
+//   `;
+
+//   // 點擊背景區域時關閉模態框
+//   modal.addEventListener("click", () => {
+//     modal.remove();
+//   });
+
+//   // Create modal content
+//   const modalContent = document.createElement("div");
+//   modalContent.style.cssText = `
+//     background-color: #fff;
+//     padding: 30px;
+//     border-radius: 10px;
+//     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+//     max-width: 600px;
+//     width: 90%;
+//     max-height: 80vh;
+//     overflow-y: auto;
+//   `;
+
+//   // 防止點擊內容時冒泡到背景，避免關閉模態框
+//   modalContent.addEventListener("click", (event) => {
+//     event.stopPropagation();
+//   });
+
+//   // Add title
+//   const title = document.createElement("h2");
+//   title.textContent = "Detection Results";
+//   title.style.cssText = `
+//     margin-top: 0;
+//     margin-bottom: 20px;
+//     color: #333;
+//     font-family: Arial, sans-serif;
+//   `;
+//   modalContent.appendChild(title);
+
+//   // Add results
+//   results.forEach((result, index) => {
+//     const item = document.createElement("div");
+//     item.style.cssText = `
+//       margin-bottom: 15px;
+//       padding: 10px;
+//       background-color: ${result.isAI ? "#ffebee" : "#e8f5e9"};
+//       border-radius: 5px;
+//       font-family: Arial, sans-serif;
+//     `;
+
+//     const itemHeader = document.createElement("div");
+//     itemHeader.style.cssText = `
+//       display: flex;
+//       justify-content: space-between;
+//       align-items: center;
+//     `;
+
+//     const resultText = document.createElement("div");
+//     resultText.innerHTML = `
+//       <strong>Image ${index + 1}:</strong>
+//       <span>${result.isAI ? "AI Generated" : "Not AI"}</span>
+//       <span style="color: #666;">(The rate of AI generated: ${
+//         result.AIpercent
+//       }%)</span>
+//     `;
+
+//     const expandButton = document.createElement("button");
+//     expandButton.innerHTML = "&#9660;"; // Down arrow character
+//     expandButton.style.cssText = `
+//       background: none;
+//       border: none;
+//       font-size: 20px;
+//       cursor: pointer;
+//       color: #333;
+//       transition: transform 0.3s;
+//     `;
+
+//     itemHeader.appendChild(resultText);
+//     itemHeader.appendChild(expandButton);
+//     item.appendChild(itemHeader);
+
+//     const detailsContainer = document.createElement("div");
+//     detailsContainer.style.cssText = `
+//       margin-top: 10px;
+//       display: none;
+//     `;
+
+//     // Add image thumbnail
+//     const thumbnail = document.createElement("img");
+//     thumbnail.src = result.url;
+//     thumbnail.alt = "Image thumbnail";
+//     thumbnail.style.cssText = `
+//       max-width: 100%;
+//       height: auto;
+//       border-radius: 5px;
+//       margin-bottom: 10px;
+//     `;
+//     detailsContainer.appendChild(thumbnail);
+
+//     // Add detection details
+//     const details = document.createElement("p");
+//     details.innerHTML = result.details;
+//     detailsContainer.appendChild(details);
+
+//     item.appendChild(detailsContainer);
+
+//     expandButton.addEventListener("click", () => {
+//       if (detailsContainer.style.display === "none") {
+//         detailsContainer.style.display = "block";
+//         expandButton.style.transform = "rotate(180deg)";
+//       } else {
+//         detailsContainer.style.display = "none";
+//         expandButton.style.transform = "rotate(0deg)";
+//       }
+//     });
+
+//     modalContent.appendChild(item);
+//   });
+
+//   // Add close button
+//   const closeButton = document.createElement("button");
+//   closeButton.textContent = "Close";
+//   closeButton.style.cssText = `
+//     display: block;
+//     margin: 20px auto 0;
+//     padding: 10px 20px;
+//     background-color: #4CAF50;
+//     color: white;
+//     border: none;
+//     border-radius: 5px;
+//     cursor: pointer;
+//     font-size: 16px;
+//     transition: background-color 0.3s;
+//   `;
+//   closeButton.addEventListener("mouseover", () => {
+//     closeButton.style.backgroundColor = "#45a049";
+//   });
+//   closeButton.addEventListener("mouseout", () => {
+//     closeButton.style.backgroundColor = "#4CAF50";
+//   });
+//   closeButton.addEventListener("click", () => {
+//     modal.remove();
+//   });
+//   modalContent.appendChild(closeButton);
+
+//   modal.appendChild(modalContent);
+//   document.body.appendChild(modal);
+// }
+
+// 顯示檢測結果的模態對話框(多了bar 但數字想改)
 function showResultsModal(results) {
   // Create modal container
   const modal = document.createElement("div");
@@ -346,10 +615,7 @@ function showResultsModal(results) {
     const resultText = document.createElement("div");
     resultText.innerHTML = `
       <strong>Image ${index + 1}:</strong> 
-      <span>${result.isAI ? "AI Generated" : "Not AI"}</span> 
-      <span style="color: #666;">(The rate of AI generated: ${
-        result.AIpercent
-      }%)</span>
+      <span>${result.isAI ? "AI Generated" : "Not AI"}</span>
     `;
 
     const expandButton = document.createElement("button");
@@ -384,6 +650,58 @@ function showResultsModal(results) {
       margin-bottom: 10px;
     `;
     detailsContainer.appendChild(thumbnail);
+
+    // Add progress bar
+    const progressBar = document.createElement("div");
+    progressBar.style.cssText = `
+      width: 100%;
+      height: 20px;
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    `;
+
+    const aiProgress = document.createElement("div");
+    aiProgress.style.cssText = `
+      width: ${result.AIpercent}%;
+      height: 100%;
+      background-color: #ff4081;
+      float: left;
+    `;
+    progressBar.appendChild(aiProgress);
+
+    const humanProgress = document.createElement("div");
+    humanProgress.style.cssText = `
+      width: ${100 - result.AIpercent}%;
+      height: 100%;
+      background-color: #4caf50;
+      float: left;
+    `;
+    progressBar.appendChild(humanProgress);
+
+    detailsContainer.appendChild(progressBar);
+
+    // Add legend
+    const legend = document.createElement("div");
+    legend.style.cssText = `
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+    `;
+
+    const aiLegend = document.createElement("span");
+    aiLegend.innerHTML = `<span style="color: #ff4081;">&#9632;</span> AI: ${result.AIpercent}%`;
+    legend.appendChild(aiLegend);
+
+    const humanLegend = document.createElement("span");
+    humanLegend.innerHTML = `<span style="color: #4caf50;">&#9632;</span> Human: ${
+      100 - result.AIpercent
+    }%`;
+    legend.appendChild(humanLegend);
+
+    detailsContainer.appendChild(legend);
 
     // Add detection details
     const details = document.createElement("p");
