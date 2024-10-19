@@ -73,6 +73,8 @@ db_conn.close()
 MODEL_API_URL = "http://localhost:3000/inference"
 VIDEO_API_URL = "https://meichu-video.sausagee.party"
 AUDIO_API_URL = "http://localhost:5000/uploader"
+Image_API_URL_LGRAD = "http://localhost:3000/inference"
+Image_API_URL_UNIVFD = "http://localhost:3009/inference"
 
 # 設定 API key（直接硬編碼）
 API_KEY = "aWxvdmVzYXVzYWdl"
@@ -226,7 +228,66 @@ def audio_detect():
         redis_conn.close()
     
     return jsonify({"results": results, "success": True})
+
+@app.route('/api/analyze/image1', methods=['POST'])
+def image_analysis_1():
+    if 'img' not in request.files:
+        return jsonify({"error": "No image", "success": False}), 400
     
+    file = request.files['img']
+    if not file:
+        return jsonify({"error": "No selected file", "success": False}), 400
+    
+    try:
+        files_to_send = {'img': (file.filename, file.stream, file.mimetype)}
+        response = requests.post(f"{Image_API_URL_LGRAD}", files=files_to_send)
+        response.raise_for_status()  # 檢查 HTTP 請求是否成功
+        result = response.json()  # 獲取模型 API 返回的結果
+        print(result)
+        # ai_probability = result[0]["result_array"][0]
+        # print(f"AI probability: {ai_probability}")
+
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+        return jsonify({"error": "Model API error", "success": False}), 500
+    except json.JSONDecodeError as json_err:
+        print(f"JSON decode error occurred: {json_err}")
+        return jsonify({"error": "JSON decode error", "success": False}), 500
+    except Exception as err:
+        print(f"Other error occurred: {err}")
+        return jsonify({"error": "Unexpected error", "success": False}), 500
+    
+    return jsonify({"results": result, "success": True})
+
+@app.route('/api/analyze/image2', methods=['POST'])
+def image_analysis_2():
+    if 'img' not in request.files:
+        return jsonify({"error": "No image", "success": False}), 400
+    
+    file = request.files['img']
+    if not file:
+        return jsonify({"error": "No selected file", "success": False}), 400
+    
+    try:
+        files_to_send = {'img': (file.filename, file.stream, file.mimetype)}
+        response = requests.post(f"{Image_API_URL_UNIVFD}", files=files_to_send)
+        response.raise_for_status()  # 檢查 HTTP 請求是否成功
+        result = response.json()  # 獲取模型 API 返回的結果
+        print(result)
+        # ai_probability = result[0]["result_array"][0]
+        # print(f"AI probability: {ai_probability}")
+
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+        return jsonify({"error": "Model API error", "success": False}), 500
+    except json.JSONDecodeError as json_err:
+        print(f"JSON decode error occurred: {json_err}")
+        return jsonify({"error": "JSON decode error", "success": False}), 500
+    except Exception as err:
+        print(f"Other error occurred: {err}")
+        return jsonify({"error": "Unexpected error", "success": False}), 500
+    
+    return jsonify({"results": result, "success": True})
 
 if __name__ == '__main__':
     app.run(port=5005, debug=True)
