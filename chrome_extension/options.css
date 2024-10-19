@@ -1,10 +1,11 @@
 :root {
-  --primary-color: #2f5e7e;
-  --secondary-color: #e7e262;
-  --background-color: #f5f7fa;
-  --text-color: #333;
-  --accent-color: #ff6b6b;
-  --shadow-color: rgba(47, 94, 126, 0.1);
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --background-color: #f7f9fc;
+  --text-color: #2c3e50;
+  --card-background: #ffffff;
+  --border-radius: 12px;
+  --transition-speed: 0.3s;
 }
 
 * {
@@ -14,7 +15,7 @@
 }
 
 body {
-  font-family: "Roboto", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   line-height: 1.6;
   color: var(--text-color);
   background-color: var(--background-color);
@@ -22,7 +23,7 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -31,30 +32,7 @@ header {
   background-color: var(--primary-color);
   padding: 1rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 6px var(--shadow-color);
-  position: relative;
-}
-
-.logo {
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 50px;
-  height: 50px;
-  background-color: var(--secondary-color);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: var(--primary-color);
-  font-size: 1.2rem;
-}
-
-nav {
-  display: flex;
-  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 nav ul {
@@ -70,32 +48,32 @@ nav ul li {
 nav ul li a {
   text-decoration: none;
   color: white;
-  font-weight: 500;
-  font-size: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
   padding: 0.5rem 1rem;
-  border-radius: 25px;
-  transition: all 0.3s ease;
+  border-radius: var(--border-radius);
+  transition: all var(--transition-speed);
 }
 
 nav ul li a:hover,
 nav ul li a.active {
-  background-color: var(--secondary-color);
-  color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 section {
   display: none;
   margin-bottom: 2rem;
   padding: 2rem;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px var(--shadow-color);
-  transition: all 0.3s ease;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transition: all var(--transition-speed);
 }
 
 section.active {
   display: block;
-  animation: fadeIn 0.5s ease;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 @keyframes fadeIn {
@@ -113,7 +91,6 @@ h1 {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
   color: var(--primary-color);
-  text-align: center;
 }
 
 h2 {
@@ -125,23 +102,22 @@ h2 {
 p,
 li {
   margin-bottom: 1rem;
-  font-size: 1rem;
-  line-height: 1.8;
+  font-size: 1.1rem;
 }
 
 .upload-area {
-  border: 3px dashed var(--secondary-color);
-  border-radius: 10px;
+  border: 3px dashed var(--primary-color);
+  border-radius: var(--border-radius);
   padding: 2rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-speed);
   margin-bottom: 1rem;
-  background-color: rgba(231, 226, 98, 0.1);
+  background-color: rgba(52, 152, 219, 0.05);
 }
 
 .upload-area:hover {
-  background-color: rgba(231, 226, 98, 0.2);
+  background-color: rgba(52, 152, 219, 0.1);
   transform: scale(1.02);
 }
 
@@ -160,10 +136,16 @@ button {
   width: 100%;
   padding: 0.8rem;
   margin-bottom: 1rem;
-  border: 2px solid var(--primary-color);
-  border-radius: 25px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  border: 2px solid #e0e0e0;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  transition: all var(--transition-speed);
+}
+
+select:focus,
+button:focus {
+  outline: none;
+  border-color: var(--primary-color);
 }
 
 button {
@@ -171,16 +153,14 @@ button {
   color: white;
   border: none;
   cursor: pointer;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 button:hover {
-  background-color: var(--secondary-color);
-  color: var(--primary-color);
+  background-color: #2980b9;
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px var(--shadow-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .button-group {
@@ -193,16 +173,16 @@ button:hover {
 .button-group button {
   flex: 1;
   padding: 0.8rem;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 #progressBar {
   width: 100%;
-  height: 20px;
+  height: 10px;
   background-color: #e0e0e0;
-  border-radius: 10px;
+  border-radius: 5px;
   overflow: hidden;
-  margin-top: 10px;
+  margin-top: 15px;
   position: relative;
 }
 
@@ -210,7 +190,7 @@ button:hover {
   height: 100%;
   background-color: var(--secondary-color);
   width: 0%;
-  transition: width 0.3s ease;
+  transition: width 0.5s ease-in-out;
 }
 
 #progressText {
@@ -219,8 +199,119 @@ button:hover {
   top: 50%;
   transform: translateY(-50%);
   font-weight: bold;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+#responseArea {
+  margin-top: 1rem;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  background-color: #f9f9f9;
+}
+
+.aiOrHumanBar {
+  width: 100%;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.aiOrHumanFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(
+    to right,
+    var(--secondary-color) 0%,
+    var(--secondary-color) var(--human-percentage),
+    #e74c3c var(--human-percentage),
+    #e74c3c 100%
+  );
+  transition: width 0.8s ease-in-out;
+}
+
+.result-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-color);
+  text-align: center;
+  margin-top: 1rem;
+}
+
+#youtubeDetection {
+  margin-top: 2rem;
+  padding: 2rem;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+#youtubeDetection h3 {
+  font-size: 1.8rem;
   color: var(--primary-color);
-  pointer-events: none;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+#youtubeDetection input[type="url"],
+#youtubeDetection input[type="time"] {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  transition: all var(--transition-speed);
+}
+
+#youtubeDetection input[type="url"]:focus,
+#youtubeDetection input[type="time"]:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.time-selection {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.time-selection label {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  flex: 1;
+  text-align: right;
+}
+
+.time-selection input {
+  flex: 2;
+}
+
+#youtubeDetectBtn {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--secondary-color);
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+#youtubeDetectBtn:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
@@ -235,125 +326,14 @@ button:hover {
   h2 {
     font-size: 1.5rem;
   }
-}
 
-#responseArea {
-  margin-top: 1rem;
-  text-align: center;
-  border: 2px solid var(--primary-color);
-  border-radius: 10px;
-  padding: 1rem;
-  background-color: white;
-}
-
-.aiOrHumanBar {
-  width: 100%;
-  height: 30px;
-  background-color: #e0e0e0;
-  border-radius: 15px;
-  overflow: hidden;
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.aiOrHumanFill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(
-    to right,
-    var(--secondary-color) 0%,
-    var(--secondary-color) var(--human-percentage),
-    var(--accent-color) var(--human-percentage),
-    var(--accent-color) 100%
-  );
-  transition: width 0.5s ease;
-}
-
-.result-text {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  text-align: center;
-}
-
-#youtubeDetection {
-  margin-top: 2rem;
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px var(--shadow-color);
-}
-
-#youtubeDetection h3 {
-  font-size: 1.8rem;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-#youtubeDetection input[type="url"],
-#youtubeDetection input[type="time"] {
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 2px solid var(--primary-color);
-  border-radius: 25px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-#youtubeDetection input[type="url"]:focus,
-#youtubeDetection input[type="time"]:focus {
-  border-color: var(--secondary-color);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(231, 226, 98, 0.3);
-}
-
-.time-selection {
-  display: flex;
-  gap: 15px;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.time-selection label {
-  font-size: 1rem;
-  color: var(--primary-color);
-  flex: 1;
-  text-align: center;
-}
-
-.time-selection input {
-  flex: 2;
-}
-
-#youtubeDetectBtn {
-  width: 100%;
-  padding: 0.8rem;
-  background-color: var(--secondary-color);
-  color: var(--primary-color);
-  font-weight: bold;
-  font-size: 1.2rem;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-#youtubeDetectBtn:hover {
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px var(--shadow-color);
-}
-
-@media (max-width: 768px) {
   .time-selection {
     flex-direction: column;
     gap: 10px;
+  }
+
+  .time-selection label {
+    text-align: left;
   }
 
   #youtubeDetection h3 {
@@ -361,21 +341,6 @@ button:hover {
   }
 
   #youtubeDetectBtn {
-    font-size: 1rem;
-  }
-
-  .logo {
-    position: static;
-    margin: 0 auto 1rem;
-    transform: none;
-  }
-
-  nav ul {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  nav ul li {
-    margin: 0.5rem;
+    font-size: 1.1rem;
   }
 }

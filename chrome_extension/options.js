@@ -35,7 +35,6 @@ window.onload = function () {
 
   dropAreaClick();
 
-
   // AI detection button logic
   document.getElementById("detectBtn").addEventListener("click", async () => {
     const file = fileInput.files[0];
@@ -65,9 +64,7 @@ window.onload = function () {
 
     preview.src = ""; // 清除圖片來源
     preview.classList.add("hidden"); // 隱藏預覽圖片
-
-    responseArea.innerHTML = "";
-    responseArea.style.display = "none";
+    responseArea.classList.add("hidden"); // 隱藏檢測結果
 
     fileInput.value = ""; // 重置 file input
 
@@ -79,12 +76,53 @@ window.onload = function () {
     const startTime = startTimeInput.value;
     const endTime = endTimeInput.value;
 
-    if (!youtubeLink || !startTime || !endTime) {
-      alert("Please fill in all fields.");
+    console.log(
+      "YouTube link:",
+      youtubeLink,
+      "Start time:",
+      startTime,
+      "End time:",
+      endTime
+    );
+
+    if (!youtubeLink) {
+      alert("Please fill in the YouTube link.");
       return;
     }
 
-    console.log("YouTube link:", youtubeLink);
+    if (!isValidTimeFormat(startTime) || !isValidTimeFormat(endTime)) {
+      alert("Please fill in the correct time format (HH:MM:SS).");
+      return;
+    }
+
+    var args = {
+      url: youtubeLink,
+      async: true,
+      download_start: parseTime(startTime),
+      download_end: parseTime(endTime),
+      sample_count: 50,
+    };
+
+    console.log("Sending message to background script");
+
+    var youtubeResponse = null;
+
+    chrome.runtime.sendMessage(
+      {
+        action: "checkVideoAI",
+        data: args,
+      },
+      (response) => {
+        console.log(
+          "Received response from background script: " +
+            JSON.stringify(response)
+        );
+        const videoId = response.id;
+        console.log("Video ID:", videoId);
+
+        getVideoResult(videoId);
+      }
+    );
   });
 };
 
@@ -193,10 +231,40 @@ async function detectAIContentInOptionsJs(file, type) {
   } catch (error) {
     console.error("Error converting image to Base64", error);
     responseArea.innerHTML = "<p>檢測失敗，請稍後再試。</p>";
-    responseArea.dislay = "block";
+    responseArea.classList.remove("hidden");
+    responseArea.style.display = "block";
   } finally {
     // 重設進度條和文字
     setTimeout(resetProgress, 1000);
+  }
+}
+
+// AI 影片檢測 用id拿取/result/video
+function getVideoResult(videoId) {
+  try {
+    // 傳送 Base64 編碼的圖片到 background.js
+    chrome.runtime.sendMessage(
+      {
+        action: "getVideoResult",
+        videoId: videoId,
+      },
+      function (response) {
+        if (response) {
+          console.log(JSON.stringify(response));
+        } else {
+          console.error("No response received from background script.");
+        }
+
+        if (response.status !== "completed" && response.status !== "error") {
+          setTimeout(() => {
+            getVideoResult(videoId);
+          }, 2000);
+        }
+      }
+    );
+  } catch (error) {
+    console.error("Error in getVideoResult", error);
+  } finally {
   }
 }
 
@@ -234,7 +302,7 @@ function resetProgress() {
 // 顯示 API 檢測結果
 function showResponse(response) {
   console.log("I am here in showResponse");
-  responseArea.style.display = "block";
+  responseArea.classList.remove("hidden");
   // aiBar.classList.remove("hidden");
   // aiFill.classList.remove("hidden");
 
@@ -262,8 +330,12 @@ function isValidYouTubeLink(url) {
   return pattern.test(url);
 }
 
-// 將時間轉換為秒（供後端使用）
-function timeToSeconds(time) {
-  const [hours, minutes, seconds] = time.split(":").map(Number);
+function isValidTimeFormat(time) {
+  const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+  return timeRegex.test(time);
+}
+
+function parseTime(timeString) {
+  const [hours, minutes, seconds] = timeString.split(":").map(Number);
   return hours * 3600 + minutes * 60 + seconds;
 }
