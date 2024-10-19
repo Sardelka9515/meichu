@@ -164,3 +164,4 @@ uploads/
 .anima/
 *.sqlite3
 video_detect/video_detect.tar
+/.vs

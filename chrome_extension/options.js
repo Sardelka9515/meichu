@@ -7,6 +7,11 @@ window.onload = function () {
   const progressText = document.getElementById("progressText");
   const responseArea = document.getElementById("responseArea");
   const resultText = document.getElementById("resultText");
+
+  
+  const videoProgressBar = document.getElementById("videoProgressBar");
+  const videoProgressFill = document.getElementById("videoProgressFill");
+
   const youtubeDetectBtn = document.getElementById("youtubeDetectBtn");
   const youtubeLinkInput = document.getElementById("youtubeLink");
   const startTimeInput = document.getElementById("startTime");
@@ -119,7 +124,7 @@ window.onload = function () {
         );
         const videoId = response.id;
         console.log("Video ID:", videoId);
-
+        resetVideoProgress();
         getVideoResult(videoId);
       }
     );
@@ -260,7 +265,8 @@ function getVideoResult(videoId) {
         } else {
           console.error("No response received from background script.");
         }
-
+        // update progress bar
+        updateVideoProgress(100 * response.progress);
         if (response.status !== "completed" && response.status !== "error") {
           setTimeout(() => {
             getVideoResult(videoId);
@@ -308,7 +314,17 @@ function resetProgress() {
   progressFill.style.width = "0%";
   progressText.textContent = "0%";
   progressBar.classList.add("hidden");
-  uploadText.classList.remove("hidden");
+}
+
+function updateVideoProgress(percent) {
+  videoProgressBar.classList.remove("hidden");
+  videoProgressFill.style.width = percent + "%";
+}
+
+// 重設進度條和上傳區域
+function resetVideoProgress() {
+  videoProgressFill.style.width = "0%";
+  videoProgressBar.classList.add("hidden");
 }
 
 // 顯示 API 檢測結果
