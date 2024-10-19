@@ -35,13 +35,6 @@ window.onload = function () {
 
   dropAreaClick();
 
-  // Save settings logic
-  document.getElementById("saveBtn").addEventListener("click", () => {
-    const autoCheckValue = document.getElementById("autoCheckSelect").value;
-    chrome.storage.sync.set({ autoCheck: autoCheckValue }, () => {
-      alert("設置保存成功！");
-    });
-  });
 
   // AI detection button logic
   document.getElementById("detectBtn").addEventListener("click", async () => {
