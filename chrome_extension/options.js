@@ -151,6 +151,12 @@ window.onload = function () {
     if (currentTime) {
         document.getElementById("startTime").value = formatTime(currentTime); // 填充播放时间
     }
+
+    chrome.storage.sync.get(["lastVideoResult"], (stuff) => {
+        if (stuff.lastVideoResult) {
+            drawChart(stuff.lastVideoResult);
+        }
+    });
 };
 
 
@@ -398,6 +404,7 @@ function getVideoResult(videoId) {
                         showVideoResponse(calculateAIRate(response.results));
                         videoLoadingSpinner.style.display = 'none';
                         finalVideoResult = response.results;
+                        chrome.storage.sync.set({ lastVideoResult: finalVideoResult }, () => { });
                         drawChart(finalVideoResult);
                     } else if (response.status === "error") {
                         console.error("Error from AI:", response.error);
