@@ -113,6 +113,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     return true; // 保持消息通道開啟
   }
+
+  if (request.action === "checkVideoAI") {
+    
+    const myHeaders = new Headers();
+    myHeaders.append("x-api-key", "aWxvdmVzYXVzYWdl");
+    myHeaders.append("Content-Type", "application/json");
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: JSON.stringify(request.data),
+      redirect: "follow"
+    };
+
+    fetch("https://meichu-video.sausagee.party/analyze/video", requestOptions)
+    .then((response) => response.json())
+    .then((result) => sendResponse(result))
+    .catch((error) => console.error(error));
+
+    return true;
+  }
+
 });
 
 // 監聽右鍵選單點擊事件
