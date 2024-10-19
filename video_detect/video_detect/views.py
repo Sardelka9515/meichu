@@ -97,7 +97,7 @@ def analyze_image(request: HttpRequest) -> Response:
     fileName = uuid.uuid4().__str__()
     fileName += pathlib.Path(img.name).suffix
     file = fs.save(fileName, img)
-    data = classify_image(f'uploads/{fileName}')
+    data = classify_image(f'uploads/{fileName}', sdxl_detect)
     fs.delete(fileName)
     return Response(data, status.HTTP_200_OK)
 

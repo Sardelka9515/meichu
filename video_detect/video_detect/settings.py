@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-t&89-n^vklf3pf6@ygu%vl(#52sn-)cioqdpu9bwtykvya_wvp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost","meichu-video","meichu-video.sausagee.party"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1",
+                 "meichu-video", "meichu-video.sausagee.party"]
 
 
 # Application definition
