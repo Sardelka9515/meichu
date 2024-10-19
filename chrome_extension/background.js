@@ -46,12 +46,6 @@ async function detectAIContent(srcUrl, type) {
               const details =
                 human + "% human <br> " + artificial + "% artificial";
 
-              // if (isAI) {
-              //   img.style.border = "4px solid red"; // AI 生成圖片
-              // } else {
-              //   img.style.border = "4px solid green"; // 非 AI 生成圖片
-              // }
-
               results.push({
                 AIpercent: AIpercent,
                 url: srcUrl,
@@ -63,10 +57,6 @@ async function detectAIContent(srcUrl, type) {
 
               alert("The " + type + " is " + message);
               console.log(srcUrl, type, AIpercent, isAI, message);
-
-              // 在圖片上添加標籤
-              // addLabelToImage(img, isAI);
-              // updateFloatingButton(results);
             } else {
               console.error("Error from AI:", response.error);
             }
