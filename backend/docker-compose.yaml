@@ -1,6 +1,33 @@
 version: "3.8"
 
 services:
+  python-main-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      FLASK_ENV: development
+      MYSQL_HOST: dev-db
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: my-secret-pw
+      REDIS_HOST: redis
+    ports:
+      - "5005:5000"
+    depends_on:
+      - dev-db
+      - redis
+    volumes:
+      - .:/app # 將當前目錄掛載到容器內的 /app 目錄
+  voice-api-server:
+    build:
+      context: ./voiceapi
+      dockerfile: Dockerfile
+    environment:
+      FLASK_ENV: development
+    ports:
+      - "5000:5000"
+
   dev-db:
     image: mariadb:latest
     environment:
