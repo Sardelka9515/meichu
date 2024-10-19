@@ -120,21 +120,11 @@ window.onload = function () {
         const videoId = response.id;
         console.log("Video ID:", videoId);
 
-        pollResult(videoId);
+        getVideoResult(videoId);
       }
     );
   });
 };
-
-// keep polling result until response.status is "completed"
-function pollResult(videoId) {
-  setTimeout(() => {
-    const status = detectAIVideoInOptionsJs(videoId);
-    if (status !== "completed") {
-      pollResult(videoId);
-    }
-  }, 5000);
-}
 
 function dropAreaClick() {
   // 監聽檔案選擇事件
@@ -250,15 +240,7 @@ async function detectAIContentInOptionsJs(file, type) {
 }
 
 // AI 影片檢測 用id拿取/result/video
-async function detectAIVideoInOptionsJs(videoId) {
-  console.log(`https://meichu-video.sausagee.party/result/video?id=${videoId}`);
-
-  const apiEndpoint = `https://meichu-video.sausagee.party/result/video?id=${videoId}`; // 替換為您的 API URL
-  const headers = {
-    "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將您的 API key 加入這裡
-    "Content-Type": "application/json",
-  };
-
+function getVideoResult(videoId) {
   try {
     // 傳送 Base64 編碼的圖片到 background.js
     chrome.runtime.sendMessage(
@@ -266,23 +248,23 @@ async function detectAIVideoInOptionsJs(videoId) {
         action: "getVideoResult",
         videoId: videoId,
       },
-      (response) => {
+      function (response) {
         if (response) {
           console.log(JSON.stringify(response));
         } else {
           console.error("No response received from background script.");
         }
-        return response.status;
+
+        if (response.status !== "completed" && response.status !== "error") {
+          setTimeout(() => {
+            getVideoResult(videoId);
+          }, 2000);
+        }
       }
     );
   } catch (error) {
-    // console.error("Error converting image to Base64", error);
-    // responseArea.innerHTML = "<p>檢測失敗，請稍後再試。</p>";
-    // responseArea.classList.remove("hidden");
-    // responseArea.style.display = "block";
+    console.error("Error in getVideoResult", error);
   } finally {
-    // 重設進度條和文字
-    //setTimeout(resetProgress, 1000);
   }
 }
 
