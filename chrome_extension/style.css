@@ -3,42 +3,43 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  width: 100%; /* 原先寬度 */
-  max-width: 600px; /* 限制最大寬度，依據你的需要調整 */
-  padding: 20px; /* 可以添加內邊距以避免元素緊貼邊框 */
+  width: 100%;
 }
-
 
 .main .div {
   background-color: #ebf57e;
   overflow: hidden;
   border: 17px solid;
   border-color: #0000004c;
-  width: 100%; /* 讓它自適應父容器的寬度 */
-  max-width: 400px; /* 同樣設置最大寬度，防止變得過大 */
+  width: 400px;
   height: 300px;
   position: relative;
 }
 
+.main .picutre-layout {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  position: absolute;
+  top: 34px;
+  left: 32px;
+}
 
 .main .DALLE {
-  /* 絕對定位 */
-  position: absolute;
-
-  /* 寬度和高度均為 111px */
+  position: relative;
+  border-radius: 999px;
   width: 111px;
   height: 111px;
-
-  /* 設置元素的頂部和左邊距 */
-  top: -108px;
-  left: -160px;
-
-  /* 設置圖片的填充方式為 cover，保持比例並覆蓋整個區域 */
+  margin-top: -2.00px;
+  margin-bottom: -12.00px;
+  margin-left: -2.00px;
+  margin-right: -12.00px;
   object-fit: cover;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .main .overlap {
-  /* 設置高度為 53px，絕對定位並設置位置 */
   height: 53px;
   top: 44px;
   position: absolute;
@@ -46,94 +47,58 @@
   left: 164px;
 }
 
-.main .frame {
+.main .auto-frame {
   position: absolute;
-  width: 100%; /* 讓上傳框自適應寬度 */
-  max-width: 314px; /* 設置最大寬度，根據需要調整 */
-  height: 56px;
-  top: 185px;
-  left: 50px; /* 適當調整 left 值，使其居中 */
+  width: 197px;
+  height: 53px;
+  top: 0;
+  left: 0;
   background-color: #305a7b;
   border: 5px solid;
   border-color: #000000;
   box-shadow: 0px 8px 4px #00000040;
 }
 
-
 .main .AUTO-DECTED-IMAGES {
-  /* 絕對定位，設置寬度和位置 */
   position: absolute;
   width: 125px;
   top: 3px;
   left: 8px;
-
-  /* 使用自定義字體 Inter-Medium */
   font-family: "Inter-Medium", Helvetica;
-
-  /* 字重為 500 */
   font-weight: 500;
-
-  /* 字體顏色為白色 */
   color: #ffffff;
-
-  /* 字體大小為 15px，文字居中對齊 */
   font-size: 15px;
   text-align: center;
-
-  /* 字母間距和行高設置 */
   letter-spacing: 0;
   line-height: normal;
 }
 
 .main .auto-dected-on {
-  /* 設置 flex 布局，垂直排列子元素 */
   display: flex;
   flex-direction: column;
-
-  /* 寬度 55px，高度 33px */
   width: 55px;
   height: 33px;
-
-  /* 子元素左對齊並居中排列 */
   align-items: flex-start;
   justify-content: center;
-
-  /* 子元素之間的間距為 10px */
   gap: 10px;
-
-  /* 設置內邊距 */
   padding: 3px;
-
-  /* 絕對定位並設置位置 */
   position: absolute;
   top: 10px;
   left: 132px;
-
-  /* 背景顏色為 #9d8f8f */
   background-color: #9d8f8f;
-
-  /* 圓角設置為最大，讓元素呈現圓形 */
   border-radius: 999px;
 }
 
 .main .toggle {
-  /* 相對定位，設置寬度和高度 */
   position: relative;
   width: 25px;
   height: 25px;
-
-  /* 背景顏色為 #d9d9d9 */
   background-color: #d9d9d9;
-
-  /* 邊框圓角設置，使元素變成圓形 */
   border-radius: 12.5px;
-
-  /* 設置陰影效果 */
   box-shadow: 0px 4px 4px #00000040;
 }
 
 .main .overlap-group {
-  /* 絕對定位，設置寬度和高度 */
   height: 56px;
   top: 113px;
   position: absolute;
@@ -142,315 +107,178 @@
 }
 
 .main .manual-frame {
-  /* 絕對定位，設置寬度和高度 */
   position: absolute;
   width: 197px;
   height: 56px;
-
-  /* 背景顏色為 #305a7b */
+  top: 0;
+  left: 0;
   background-color: #305a7b;
-
-  /* 邊框寬度為 5px，顏色為黑色 */
   border: 5px solid;
   border-color: #000000;
-
-  /* 設置陰影效果 */
   box-shadow: 0px 8px 4px #00000040;
 }
 
 .main .MANUAL-DECTED-VIDEO {
-  /* 絕對定位，設置寬度和位置 */
   position: absolute;
   width: 132px;
   top: 5px;
   left: 0;
-
-  /* 使用自定義字體 Inter-Medium */
   font-family: "Inter-Medium", Helvetica;
-
-  /* 字重為 500，字體顏色為白色 */
   font-weight: 500;
   color: #ffffff;
-
-  /* 字體大小為 14px，文字居中對齊 */
   font-size: 14px;
   text-align: center;
-
-  /* 字母間距和行高設置 */
   letter-spacing: 0;
   line-height: normal;
 }
 
 .main .manual-dected-video {
-  /* 使用 flex 布局，垂直排列子元素 */
   display: flex;
   flex-direction: column;
-
-  /* 寬度 55px，高度 30px */
   width: 55px;
   height: 30px;
-
-  /* 子元素左對齊並居中排列 */
   align-items: flex-start;
   justify-content: center;
-
-  /* 子元素間距 10px */
   gap: 10px;
-
-  /* 設置內邊距 */
   padding: 3px;
-
-  /* 絕對定位並設置位置 */
   position: absolute;
   top: 13px;
   left: 130px;
-
-  /* 背景顏色為 #9d8f8f */
   background-color: #9d8f8f;
-
-  /* 圓角設置為最大，讓元素呈現圓形 */
   border-radius: 999px;
-
-  /* 設置陰影效果 */
   box-shadow: 0px 4px 4px #00000040;
 }
 
 .main .toggle-2 {
-  /* 相對定位，設置寬度和高度 */
   margin-top: -0.50px;
   margin-bottom: -0.50px;
   position: relative;
   width: 25px;
   height: 25px;
-
-  /* 背景顏色為 #d9d9d9 */
   background-color: #d9d9d9;
-
-  /* 邊框圓角設置，使元素變成圓形 */
   border-radius: 12.5px;
-
-  /* 設置陰影效果 */
   box-shadow: 0px 4px 4px #00000040;
 }
 
 .main .frame {
-  /* 絕對定位，設置寬度和高度 */
   position: absolute;
   width: 314px;
   height: 56px;
   top: 185px;
   left: 47px;
-
-  /* 背景顏色為 #305a7b */
   background-color: #305a7b;
-
-  /* 邊框寬度為 5px，邊框顏色為黑色 */
   border: 5px solid;
   border-color: #000000;
-
-  /* 設置陰影效果 */
   box-shadow: 0px 8px 4px #00000040;
 }
 
 .main .text-wrapper {
-  /* 絕對定位，設置寬度和位置 */
   position: absolute;
   width: 186px;
   top: 5px;
   left: 4px;
-
-  /* 使用自定義字體 Inter-Medium */
   font-family: "Inter-Medium", Helvetica;
-
-  /* 字重為 500，字體顏色為白色 */
   font-weight: 500;
   color: #ffffff;
-
-  /* 字體大小為 14px，文字居中對齊 */
   font-size: 14px;
   text-align: center;
-
-  /* 字母間距和行高設置 */
   letter-spacing: 0;
   line-height: normal;
 }
 
 .main .add-file-button {
-  /* 使用 flex 布局，子元素水平排列 */
   display: flex;
-
-  /* 設置寬度 119px，高度 24px */
   width: 119px;
   height: 24px;
-
-  /* 子元素居中對齊 */
   align-items: center;
   justify-content: space-between;
-
-  /* 設置內邊距 */
   padding: 20px 10px;
-
-  /* 絕對定位，設置位置 */
   position: absolute;
   top: 17px;
   left: 176px;
-
-  /* 背景顏色為 #969696 */
   background-color: #969696;
-
-  /* 圓角設置為最大，讓元素呈現圓形 */
   border-radius: 999px;
-
-  /* 設置陰影效果 */
   box-shadow: 0px 4px 4px #00000040;
 }
 
 .main .icons-add {
-  /* 相對定位，設置寬度和高度 */
   position: relative;
   width: 24px;
   height: 24px;
-
-  /* 調整上下邊距 */
   margin-top: -20.00px;
   margin-bottom: -20.00px;
-
-  /* 設置背景圖片為加號圖片 */
   background-image: url(./img/plus.png);
-
-  /* 調整背景大小，確保圖片覆蓋整個區域 */
   background-size: 100% 100%;
 }
 
 .main .text-wrapper-2 {
-  /* 相對定位 */
   position: relative;
-
-  /* 調整寬度為適合內容 */
   width: fit-content;
-
-  /* 調整上下邊距 */
   margin-top: -17.50px;
   margin-bottom: -15.50px;
-
-  /* 調整左邊距 */
   margin-left: -1px;
-
-  /* 使用自定義字體 Inter-Medium */
   font-family: "Inter-Medium", Helvetica;
-
-  /* 字重為 500，字體顏色為白色 */
   font-weight: 500;
   color: #ffffff;
-
-  /* 字體大小為 14px，文字居中對齊 */
   font-size: 14px;
   text-align: center;
-
-  /* 字母間距和行高設置 */
   letter-spacing: 0;
   line-height: normal;
 }
 
 .main .property-off-wrapper {
-  /* 絕對定位，設置寬度和高度 */
   position: absolute;
   width: 100px;
   height: 120px;
   top: 215px;
   left: 421px;
-
-  /* 圓角半徑設置為 5px */
   border-radius: 5px;
-
-  /* 隱藏溢出內容 */
   overflow: hidden;
-
-  /* 設置邊框為虛線，邊框顏色為紫色 */
   border: 1px dashed;
   border-color: #9747ff;
 }
 
 .main .property-off {
-  /* 使用 flex 布局，垂直排列子元素 */
   display: flex;
   flex-direction: column;
-
-  /* 寬度 55px，高度 30px */
   width: 55px;
   height: 30px;
-
-  /* 子元素左對齊並居中排列 */
   align-items: flex-start;
   justify-content: center;
-
-  /* 子元素間距 10px */
   gap: 10px;
-
-  /* 設置內邊距 */
   padding: 3px;
-
-  /* 相對定位，設置位置 */
   position: relative;
   top: 126px;
   left: 294px;
-
-  /* 背景顏色為 #9d8f8f */
   background-color: #9d8f8f;
-
-  /* 圓角設置為最大，讓元素呈現圓形 */
   border-radius: 999px;
-
-  /* 設置陰影效果 */
   box-shadow: 0px 4px 4px #00000040;
 }
 
 .main .div-wrapper {
-  /* 絕對定位，設置寬度和高度 */
   position: absolute;
   width: 100px;
   height: 120px;
   top: 39px;
   left: 417px;
-
-  /* 圓角半徑設置為 5px */
   border-radius: 5px;
-
-  /* 隱藏溢出內容 */
   overflow: hidden;
-
-  /* 設置邊框為虛線，邊框顏色為紫色 */
   border: 1px dashed;
   border-color: #9747ff;
 }
 
 .main .toggle-wrapper {
-  /* 使用 flex 布局，垂直排列子元素 */
   display: flex;
   flex-direction: column;
-
-  /* 寬度 55px，高度 33px */
   width: 55px;
   height: 33px;
-
-  /* 子元素左對齊並居中排列 */
   align-items: flex-start;
   justify-content: center;
-
-  /* 子元素間距 10px */
   gap: 10px;
-
-  /* 設置內邊距 */
   padding: 3px;
-
-  /* 相對定位，設置位置 */
   position: relative;
   top: 54px;
   left: 296px;
-
-  /* 背景顏色為 #9d8f8f */
   background-color: #9d8f8f;
-
-  /* 圓角設置為最大，讓元素呈現圓形 */
   border-radius: 999px;
 }
