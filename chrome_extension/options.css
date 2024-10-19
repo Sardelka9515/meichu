@@ -38,11 +38,29 @@ header {
   align-items: center;
 }
 
-.logo-placeholder {
-  width: 150px;
-  height: 50px;
-  background-color: var(--secondary-color);
+.logo-container {
+  display: flex;
+  align-items: center; /* 垂直居中对齐 */
+  /* background-color: #c0bcad; */
   border-radius: var(--border-radius);
+}
+
+.logo-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--border-radius);
+  background-image: url("./assets/image.png"); /* 替换为您的图片路径 */
+  background-size: cover; /* 调整图片大小以覆盖整个容器 */
+  background-position: center; /* 将图片居中 */
+  background-repeat: no-repeat; /* 防止图片重复 */
+}
+
+.logo-text {
+  margin-left: 20px; /* 图片和文字之间的间距 */
+  margin-right: 20px;
+  font-size: 20px; /* 根据需要调整字体大小 */
+  color: white; /* 根据需要调整文字颜色 */
+  font-weight: bold;
 }
 
 nav ul {
@@ -333,8 +351,12 @@ button:hover {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
