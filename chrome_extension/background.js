@@ -203,7 +203,7 @@ function getYouTubeVideoUrl() {
 
 // 分析 YouTube 影片
 function analyzeVideo(videoUrl) {
-  const apiEndpoint = "http://localhost:5000/api/analyze/video"; // 後端 API URL
+  const apiEndpoint = "https://meichu-video.sausagee.party/analyze/video"; // 後端 API URL
   const headers = {
     "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將你的 API key 加入這裡
   };

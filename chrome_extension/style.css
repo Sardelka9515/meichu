@@ -3,11 +3,11 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center; /* 居中对齐 */
   width: 100%; /* 原先寬度 */
   max-width: 600px; /* 限制最大寬度，依據你的需要調整 */
   padding: 20px; /* 可以添加內邊距以避免元素緊貼邊框 */
 }
-
 
 .main .div {
   background-color: #ebf57e;
@@ -45,6 +45,7 @@
   width: 197px;
   left: 164px;
 }
+
 
 .main .frame {
   position: absolute;
@@ -274,6 +275,7 @@
   letter-spacing: 0;
   line-height: normal;
 }
+
 
 .main .add-file-button {
   /* 使用 flex 布局，子元素水平排列 */
