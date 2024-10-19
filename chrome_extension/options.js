@@ -250,6 +250,8 @@ async function detectAIContentInOptionsJs(file, type) {
   }
 }
 
+var finalVideoResult = null;
+
 // AI 影片檢測 用id拿取/result/video
 function getVideoResult(videoId) {
   try {
@@ -260,6 +262,7 @@ function getVideoResult(videoId) {
         videoId: videoId,
       },
       function (response) {
+        console.log("Received!");
         if (response) {
           console.log(JSON.stringify(response));
         } else {
@@ -271,6 +274,10 @@ function getVideoResult(videoId) {
           setTimeout(() => {
             getVideoResult(videoId);
           }, 2000);
+        } else if (response.status === "completed") {
+          finalVideoResults = response.results;
+          console.log("finalVideoResult", finalVideoResults);
+          drawChart(finalVideoResults);
         }
       }
     );
@@ -358,12 +365,71 @@ function isValidYouTubeLink(url) {
   return pattern.test(url);
 }
 
+// 檢查時間格式是否正確的函式
 function isValidTimeFormat(time) {
   const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
   return timeRegex.test(time);
 }
 
+// 將時間字串轉換為秒數的函式
 function parseTime(timeString) {
   const [hours, minutes, seconds] = timeString.split(":").map(Number);
   return hours * 3600 + minutes * 60 + seconds;
+}
+
+// 繪製圖表的函式
+function drawChart(data) {
+  // 從資料中提取 human 和 artificial 數值
+  const labels = data.map((_, index) => `Image ${index + 1}`); // X 軸標籤
+  const humanData = data.map((item) => item.human); // Y 軸: human
+  const artificialData = data.map((item) => item.artificial); // Y 軸: artificial
+
+  // 建立 Chart.js 圖表
+  const ctx = document.getElementById("myChart").getContext("2d");
+
+  const myChart = new Chart(ctx, {
+    type: "line", // 折線圖類型
+    data: {
+      labels: labels, // X 軸標籤
+      datasets: [
+        {
+          label: "Human", // Human 資料
+          data: humanData,
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 2,
+          fill: false,
+        },
+        {
+          label: "Artificial", // Artificial 資料
+          data: artificialData,
+          borderColor: "rgba(255, 99, 132, 1)",
+          borderWidth: 2,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top", // 標籤位置
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const index = context.dataIndex;
+              const img = data[index].image; // 取得對應的圖片連結
+              return `${context.dataset.label}: ${context.raw} (Image: ${img})`;
+            },
+          },
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true, // Y 軸從 0 開始
+          max: 1, // Y 軸最大值設為 1
+        },
+      },
+    },
+  });
 }
