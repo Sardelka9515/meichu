@@ -137,3 +137,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 API_KEYS = ["aWxvdmVzYXVzYWdl"]
+
+MAX_VIDEO_WORKERS = 8
