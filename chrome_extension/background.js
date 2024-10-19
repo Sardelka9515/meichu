@@ -115,7 +115,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.action === "checkVideoAI") {
-    
     const myHeaders = new Headers();
     myHeaders.append("x-api-key", "aWxvdmVzYXVzYWdl");
     myHeaders.append("Content-Type", "application/json");
@@ -124,17 +123,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       method: "POST",
       headers: myHeaders,
       body: JSON.stringify(request.data),
-      redirect: "follow"
+      redirect: "follow",
     };
 
     fetch("https://meichu-video.sausagee.party/analyze/video", requestOptions)
-    .then((response) => response.json())
-    .then((result) => sendResponse(result))
-    .catch((error) => console.error(error));
+      .then((response) => response.json())
+      .then((result) => sendResponse(result))
+      .catch((error) => console.error(error));
 
     return true;
   }
 
+  if (request.action === "getVideoResult") {
+    const videoId = request.videoId;
+    const myHeaders = new Headers();
+    myHeaders.append("x-api-key", "aWxvdmVzYXVzYWdl");
+    myHeaders.append("Content-Type", "application/json");
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(
+      `https://meichu-video.sausagee.party/result/video?id=${videoId}`,
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => sendResponse(result))
+      .catch((error) => console.error(error));
+
+    return true;
+  }
 });
 
 // 監聽右鍵選單點擊事件
@@ -271,6 +292,8 @@ function analyzeVideo(videoUrl) {
     });
 }
 
+function getVideoResult(videoId) {}
+
 /*
 // 偵測 AI 內容
 async function detectAIContent(srcUrl, type) {
@@ -281,120 +304,3 @@ async function detectAIContent(srcUrl, type) {
   console.log(srcUrl, type, accuracy, isAI, message);
   alert("The " + type + " is " + message);
 }*/
-
-// Model Box 函數 (有問題)
-function showWarningModal(contentType, accuracy, message) {
-  console.log("I am in showWarningModal", contentType, accuracy, message);
-
-  // 簡單的參數檢查
-  if (!contentType || accuracy == null || !message) {
-    console.error("Invalid parameters:", { contentType, accuracy, message });
-    return;
-  }
-
-  // 移除已存在的模態框
-  const existingModal = document.querySelector(".warning-modal");
-  if (existingModal) existingModal.remove();
-
-  // 建立模態框的背景
-  const modal = document.createElement("div");
-  modal.className = "warning-modal"; // 加上 className 以便管理
-  modal.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-  `;
-
-  // 建立模態框的內容容器
-  const modalContent = document.createElement("div");
-  modalContent.style.cssText = `
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
-    width: 90%;
-    text-align: center;
-    font-family: Arial, sans-serif;
-  `;
-
-  // 第一行：顯示準確度
-  const line1 = document.createElement("p");
-  line1.textContent = `此 ${contentType} 的真實性是 ${accuracy}%`;
-  line1.style.cssText = `
-    margin: 10px 0;
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-  `;
-  modalContent.appendChild(line1);
-
-  // 第二行：顯示結果訊息
-  const line2 = document.createElement("p");
-  line2.textContent = message;
-  line2.style.cssText = `
-    margin: 10px 0;
-    font-size: 16px;
-    color: ${message === "AI generated" ? "#e53935" : "#4CAF50"};
-  `;
-  modalContent.appendChild(line2);
-
-  // 第三行：顯示警示符號及按鈕
-  const iconAndButtonContainer = document.createElement("div");
-  iconAndButtonContainer.style.cssText = `
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 15px;
-  `;
-
-  const warningIcon = document.createElement("span");
-  warningIcon.innerHTML = "&#9888;"; // 警告符號 (⚠)
-  warningIcon.style.cssText = `
-    font-size: 30px;
-    color: #e53935;
-  `;
-  iconAndButtonContainer.appendChild(warningIcon);
-
-  const detailsButton = document.createElement("button");
-  detailsButton.textContent = "查看詳情";
-  detailsButton.style.cssText = `
-    padding: 10px 20px;
-    background-color: #1976D2;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-  `;
-  detailsButton.addEventListener("click", () => {
-    alert("更多的偵測結果將在此顯示...");
-  });
-  iconAndButtonContainer.appendChild(detailsButton);
-
-  modalContent.appendChild(iconAndButtonContainer);
-
-  // 點擊背景關閉模態框
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      modal.remove(); // 點擊背景時關閉模態框
-    }
-  });
-
-  // 按下 ESC 鍵關閉模態框
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      modal.remove();
-    }
-  });
-
-  modal.appendChild(modalContent);
-  document.body.appendChild(modal);
-}

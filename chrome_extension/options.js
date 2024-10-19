@@ -105,6 +105,8 @@ window.onload = function () {
 
     console.log("Sending message to background script");
 
+    var youtubeResponse = null;
+
     chrome.runtime.sendMessage(
       {
         action: "checkVideoAI",
@@ -115,22 +117,24 @@ window.onload = function () {
           "Received response from background script: " +
             JSON.stringify(response)
         );
-        if (response) {
-          if (response.status === "completed") {
-            console.log("Showing result", response.result);
-            const message = `在 ${startTime} 到 ${endTime} 這段時間，此視頻${result.message}（準確度：${result.accuracy}%）`;
-            alert(message);
-          } else {
-            alert("id: " + response.id + ", status: " + response.status);
-          }
-        } else {
-          console.error("Detection failed");
-          alert("檢測失敗，請稍後再試");
-        }
+        const videoId = response.id;
+        console.log("Video ID:", videoId);
+
+        pollResult(videoId);
       }
     );
   });
 };
+
+// keep polling result until response.status is "completed"
+function pollResult(videoId) {
+  setTimeout(() => {
+    const status = detectAIVideoInOptionsJs(videoId);
+    if (status !== "completed") {
+      pollResult(videoId);
+    }
+  }, 5000);
+}
 
 function dropAreaClick() {
   // 監聽檔案選擇事件
@@ -242,6 +246,43 @@ async function detectAIContentInOptionsJs(file, type) {
   } finally {
     // 重設進度條和文字
     setTimeout(resetProgress, 1000);
+  }
+}
+
+// AI 影片檢測 用id拿取/result/video
+async function detectAIVideoInOptionsJs(videoId) {
+  console.log(`https://meichu-video.sausagee.party/result/video?id=${videoId}`);
+
+  const apiEndpoint = `https://meichu-video.sausagee.party/result/video?id=${videoId}`; // 替換為您的 API URL
+  const headers = {
+    "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將您的 API key 加入這裡
+    "Content-Type": "application/json",
+  };
+
+  try {
+    // 傳送 Base64 編碼的圖片到 background.js
+    chrome.runtime.sendMessage(
+      {
+        action: "getVideoResult",
+        videoId: videoId,
+      },
+      (response) => {
+        if (response) {
+          console.log(JSON.stringify(response));
+        } else {
+          console.error("No response received from background script.");
+        }
+        return response.status;
+      }
+    );
+  } catch (error) {
+    // console.error("Error converting image to Base64", error);
+    // responseArea.innerHTML = "<p>檢測失敗，請稍後再試。</p>";
+    // responseArea.classList.remove("hidden");
+    // responseArea.style.display = "block";
+  } finally {
+    // 重設進度條和文字
+    //setTimeout(resetProgress, 1000);
   }
 }
 
