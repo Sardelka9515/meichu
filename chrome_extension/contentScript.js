@@ -615,7 +615,10 @@ function showResultsModal(results) {
     const resultText = document.createElement("div");
     resultText.innerHTML = `
       <strong>Image ${index + 1}:</strong> 
-      <span>${result.isAI ? "AI Generated" : "Not AI"}</span>
+      <span>${result.isAI ? "AI Generated" : "Not AI Detection"}</span>
+    `;
+    resultText.style.cssText = `
+      color: ${result.isAI ? "#f44336" : "#4caf50"};
     `;
 
     const expandButton = document.createElement("button");
@@ -693,12 +696,18 @@ function showResultsModal(results) {
 
     const aiLegend = document.createElement("span");
     aiLegend.innerHTML = `<span style="color: #ff4081;">&#9632;</span> AI: ${result.AIpercent}%`;
+    aiLegend.style.cssText = `
+      color: #f44336;
+    `;
     legend.appendChild(aiLegend);
 
     const humanLegend = document.createElement("span");
     humanLegend.innerHTML = `<span style="color: #4caf50;">&#9632;</span> Human: ${
       100 - result.AIpercent
     }%`;
+    humanLegend.style.cssText = `
+      color: #4caf50;
+    `;
     legend.appendChild(humanLegend);
 
     detailsContainer.appendChild(legend);
@@ -706,6 +715,10 @@ function showResultsModal(results) {
     // Add detection details
     const details = document.createElement("p");
     details.innerHTML = result.details;
+    details.style.cssText = `
+      font-size: 14px;
+      color: #000000;
+    `;
     detailsContainer.appendChild(details);
 
     item.appendChild(detailsContainer);
