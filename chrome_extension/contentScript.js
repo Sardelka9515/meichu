@@ -343,7 +343,7 @@ function showResultsModal(results) {
     resultText.innerHTML = `
       <strong>Image ${index + 1}:</strong> 
       <span>${result.isAI ? "AI Generated" : "Not AI"}</span> 
-      <span style="color: #666;">(${result.AIpercent}%)</span>
+      <span style="color: #666;">(The rate of AI generated: ${result.AIpercent}%)</span>
     `;
 
     const expandButton = document.createElement("button");
