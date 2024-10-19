@@ -1,5 +1,4 @@
 window.onload = function () {
-  // Tab switching logic
   const navLinks = document.querySelectorAll(".tab-link");
   const sections = document.querySelectorAll("section");
   const uploadText = document.getElementById("uploadText");
@@ -8,6 +7,12 @@ window.onload = function () {
   const progressText = document.getElementById("progressText");
   const responseArea = document.getElementById("responseArea");
   const resultText = document.getElementById("resultText");
+  const youtubeDetectBtn = document.getElementById("youtubeDetectBtn");
+  const youtubeLinkInput = document.getElementById("youtubeLink");
+  const startTimeInput = document.getElementById("startTime");
+  const endTimeInput = document.getElementById("endTime");
+  const dropArea = document.getElementById("dropArea");
+  const fileInput = document.getElementById("fileInput");
 
   navLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
@@ -28,35 +33,7 @@ window.onload = function () {
     document.getElementById("autoCheckSelect").value = autoCheckValue;
   });
 
-  // Drag-and-drop upload logic
-  const dropArea = document.getElementById("dropArea");
-  const fileInput = document.getElementById("fileInput");
-
-  // 監聽檔案選擇事件
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
-    if (file && file.type.startsWith("image/")) {
-      showPreview(file);
-    }
-  });
-
-  dropArea.addEventListener("click", () => fileInput.click());
-  dropArea.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropArea.style.backgroundColor = "rgba(74, 144, 226, 0.2)";
-  });
-
-  dropArea.addEventListener("dragleave", () => {
-    dropArea.style.backgroundColor = "";
-  });
-
-  dropArea.addEventListener("drop", (e) => {
-    e.preventDefault();
-    dropArea.style.backgroundColor = "";
-    if (e.dataTransfer.files.length) {
-      fileInput.files = e.dataTransfer.files;
-    }
-  });
+  dropAreaClick();
 
   // Save settings logic
   document.getElementById("saveBtn").addEventListener("click", () => {
@@ -97,13 +74,54 @@ window.onload = function () {
     preview.classList.add("hidden"); // 隱藏預覽圖片
 
     responseArea.innerHTML = "";
-    responseArea.classList.add("hidden");
+    responseArea.style.display = "none";
 
     fileInput.value = ""; // 重置 file input
 
     uploadText.textContent = "拖放圖片或視頻到這裡，或者點擊上傳";
   });
+
+  youtubeDetectBtn.addEventListener("click", () => {
+    const youtubeLink = youtubeLinkInput.value;
+    const startTime = startTimeInput.value;
+    const endTime = endTimeInput.value;
+
+    if (!youtubeLink || !startTime || !endTime) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    console.log("YouTube link:", youtubeLink);
+  });
 };
+
+function dropAreaClick() {
+  // 監聽檔案選擇事件
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (file && file.type.startsWith("image/")) {
+      showPreview(file);
+    }
+  });
+
+  dropArea.addEventListener("click", () => fileInput.click());
+  dropArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropArea.style.backgroundColor = "rgba(74, 144, 226, 0.2)";
+  });
+
+  dropArea.addEventListener("dragleave", () => {
+    dropArea.style.backgroundColor = "";
+  });
+
+  dropArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropArea.style.backgroundColor = "";
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+    }
+  });
+}
 
 // 新增圖片預覽的函數
 function showPreview(file) {
@@ -182,7 +200,7 @@ async function detectAIContentInOptionsJs(file, type) {
   } catch (error) {
     console.error("Error converting image to Base64", error);
     responseArea.innerHTML = "<p>檢測失敗，請稍後再試。</p>";
-    responseArea.classList.remove("hidden");
+    responseArea.dislay = "block";
   } finally {
     // 重設進度條和文字
     setTimeout(resetProgress, 1000);
@@ -223,7 +241,7 @@ function resetProgress() {
 // 顯示 API 檢測結果
 function showResponse(response) {
   console.log("I am here in showResponse");
-  responseArea.classList.remove("hidden");
+  responseArea.style.display = "block";
   // aiBar.classList.remove("hidden");
   // aiFill.classList.remove("hidden");
 
@@ -236,11 +254,23 @@ function showResponse(response) {
 
   // 設定進度條比例
   const humanPercentage = (human / total) * 100;
-  document.querySelector(".progress-fill").style.width = "100%";
+  document.querySelector(".aiOrHumanFill").style.width = "100%";
   document
-    .querySelector(".progress-fill")
+    .querySelector(".aiOrHumanFill")
     .style.setProperty("--human-percentage", `${humanPercentage}%`);
 
   // resultText.textContent = message;
   resultText.innerHTML = `${message}<br>${human}% human | ${artificial}% artificial`;
+}
+
+// 檢查 YouTube 連結格式是否正確的函式
+function isValidYouTubeLink(url) {
+  const pattern = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+  return pattern.test(url);
+}
+
+// 將時間轉換為秒（供後端使用）
+function timeToSeconds(time) {
+  const [hours, minutes, seconds] = time.split(":").map(Number);
+  return hours * 3600 + minutes * 60 + seconds;
 }

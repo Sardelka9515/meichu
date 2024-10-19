@@ -52,14 +52,26 @@
                 <img id="preview" class="hidden" alt="上傳的圖片預覽" />
             </div>
             <div id="responseArea" class="hidden">
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
+                <div class="aiOrHumanBar">
+                    <div class="aiOrHumanFill"></div>
                 </div>
                 <p id="resultText" class="result-text"></p>
             </div>
             <div class="button-group">
                 <button id="clearBtn">移除圖片</button>
                 <button id="detectBtn">開始 AI 檢測</button>
+            </div>
+
+            <div id="youtubeDetection">
+                <h3>檢測 YouTube 影片</h3>
+                <input type="url" id="youtubeLink" placeholder="輸入 YouTube 連結" required />
+                <div class="time-selection">
+                    <label for="startTime">開始時間：</label>
+                    <input type="time" id="startTime" step="1" value="00:00" />
+                    <label for="endTime">結束時間：</label>
+                    <input type="time" id="endTime" step="1" value="01:00" />
+                </div>
+                <button id="youtubeDetectBtn">開始檢測</button>
             </div>
 
             <h2>設置</h2>
