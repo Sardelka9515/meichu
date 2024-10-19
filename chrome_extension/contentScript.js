@@ -48,15 +48,19 @@ async function runAutoImageDetection() {
               if (response) {
                 if (response.success) {
                   console.log("AI analysis result:", response.result);
-                  
+
                   // 假設 API 返回的數據中包含 accuracy 和 isAI
-                  const artificial = Math.round(response.result.artificial*100); // 來自 API 的準確度
-                  const human = Math.round(response.result.human*100); // 來自 API 的 AI 判斷結果
+                  const artificial = Math.round(
+                    response.result.artificial * 100
+                  ); // 來自 API 的準確度
+                  const human = Math.round(response.result.human * 100); // 來自 API 的 AI 判斷結果
                   const isAI = artificial > human;
-                  const AIpercent = Math.round(artificial*100/(human+artificial));
+                  const AIpercent = Math.round(
+                    (artificial * 100) / (human + artificial)
+                  );
                   const message = isAI ? "AI generated" : "not AI generated";
-                  const details = human+"% human <br> "+artificial+"% artificial";
-                  
+                  const details =
+                    human + "% human <br> " + artificial + "% artificial";
 
                   if (isAI) {
                     img.style.border = "4px solid red"; // AI 生成圖片
@@ -70,7 +74,7 @@ async function runAutoImageDetection() {
                     isAI: isAI,
                     artificial: artificial,
                     human: human,
-                    details: details
+                    details: details,
                   });
 
                   // 在圖片上添加標籤
