@@ -59,7 +59,7 @@ Api key is required for all endpoints
   - download_start: the start time to download video in seconds
   - download_end: the end time to download video in seconds, will be `truncated to start_time` + `max_download_duration` (default 60)
   - sample_count: how many frames to extract from downloaded video for analysis (default 20, max 50)
-  - status: `queued` | `downloading` | `extracting` | `analyzing` | `completed`
+  - status: `queued` | `downloading` | `extracting` | `analyzing` | `completed` | `error`
   - progress: progress of the current stage
   - results: analysis results of each extracted frame, as an array
     - human
