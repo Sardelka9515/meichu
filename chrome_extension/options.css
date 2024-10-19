@@ -308,6 +308,32 @@ button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+#videoStatusTextContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the elements horizontally */
+}
+
+#videoStatusText {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #4caf50;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @media (max-width: 768px) {
   body {
     font-size: 14px;

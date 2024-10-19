@@ -50,7 +50,7 @@
             <h2>AI 檢測功能</h2>
             <div id="dropArea" class="upload-area">
                 <p id="uploadText">拖放圖片或視頻到這裡，或者點擊上傳</p>
-                <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;">
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
                 <img id="preview" class="hidden" alt="Preview">
             </div>
 
@@ -60,8 +60,8 @@
             </div>
 
             <div id="responseArea" class="hidden">
-                <div class="aiOrHumanBar">
-                    <div class="aiOrHumanFill"></div>
+                <div class="aiOrHumanBar" id="image-result-bar">
+                    <div class="aiOrHumanFill" id="image-result-fill"></div>
                 </div>
                 <p id="resultText" class="result-text"></p>
             </div>
@@ -72,20 +72,28 @@
             </div>
 
             <div id="youtubeDetection">
-                <h3>檢測 YouTube 影片</h3>
-                <input type="url" id="youtubeLink" placeholder="輸入 YouTube 連結">
+                <h3>檢測影片</h3>
+                <input type="url" id="youtubeLink" placeholder="輸入影片連結">
                 <div class="time-selection">
                     <label for="startTime">開始時間：</label>
                     <input type="text" id="startTime" placeholder="HH:MM:SS">
                     <label for="endTime">結束時間：</label>
                     <input type="text" id="endTime" placeholder="HH:MM:SS">
                 </div>
-                <button id="youtubeDetectBtn">開始檢測</button>
-                <!-- Progress Bar -->
+                <div id="videoStatusTextContainer">
+                    <h3 style="text-align:center; display: inline;" id="videoStatusText"></h3>
+                    <h3 id="videoLoadingSpinner" class="spinner" style="display: none;"></h3>
+                </div>
                 <div id="videoProgressBar" class="hidden">
                     <div id="videoProgressFill" style="width: 0%">
                     </div>
                 </div>
+                <div id="videoResponseArea" class="hidden">
+                    <div class="aiOrHumanBar" id="video-result-bar">
+                        <div class="aiOrHumanFill" id="video-result-fill"></div>
+                    </div>
+                </div>
+                <button id="youtubeDetectBtn">開始檢測</button>
             </div>
 
         </section>
