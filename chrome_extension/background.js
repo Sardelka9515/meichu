@@ -10,46 +10,74 @@ async function detectAIContent(srcUrl, type) {
     "X-API-KEY": "aWxvdmVzYXVzYWdl", // 將您的 API key 加入這裡
   };
 
-  // 準備發送的數據
-  const body = {
-    srcUrl,
-    type,
-  };
+  const results = [];
 
   try {
-    // 發送請求到後端 API
-    const response = await fetch(apiEndpoint, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(body),
-    });
+    // 將圖片的 URL 轉換為 Blob
+    const response = await fetch(srcUrl);
+    const blob = await response.blob();
 
-    // 檢查響應是否成功
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
+    // 使用 FileReader 將 Blob 轉換為 Base64
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = () => {
+      const base64data = reader.result;
 
-    // 解析 JSON 數據
-    const data = await response.json();
-    
-    // 假設 API 返回的數據中包含 accuracy 和 isAI
-    const artificial = data.artificial; // 來自 API 的準確度
-    const human = data.human; // 來自 API 的 AI 判斷結果
-    const isAI = artificial > human;
-    const message = isAI ? "AI generated" : "not AI generated";
+      // 傳送 Base64 編碼的圖片到 background.js
+      chrome.runtime.sendMessage(
+        {
+          action: "sendImageToBackend",
+          base64Image: base64data, // 傳送 Base64 編碼圖片
+          fileName: "image.jpg", // 給圖片取一個名稱
+        },
+        (response) => {
+          if (response) {
+            if (response.success) {
+              console.log("AI analysis result:", response.result);
 
-    // 輸出結果到控制台
-    console.log(srcUrl, type, accuracy, isAI, message);
-    
-    // 顯示結果
-    alert("The " + type + " is " + message);
+              // 假設 API 返回的數據中包含 accuracy 和 isAI
+              const artificial = Math.round(response.result.artificial * 100); // 來自 API 的準確度
+              const human = Math.round(response.result.human * 100); // 來自 API 的 AI 判斷結果
+              const isAI = artificial > human;
+              const AIpercent = Math.round(
+                (artificial * 100) / (human + artificial)
+              );
+              const message = isAI ? "AI generated" : "not AI generated";
+              const details =
+                human + "% human <br> " + artificial + "% artificial";
 
-    // 如果需要顯示模態框，這裡可以調用 showWarningModal
-    showWarningModal(type, accuracy, message);
-    
+              // if (isAI) {
+              //   img.style.border = "4px solid red"; // AI 生成圖片
+              // } else {
+              //   img.style.border = "4px solid green"; // 非 AI 生成圖片
+              // }
+
+              results.push({
+                AIpercent: AIpercent,
+                url: srcUrl,
+                isAI: isAI,
+                artificial: artificial,
+                human: human,
+                details: details,
+              });
+
+              alert("The " + type + " is " + message);
+              console.log(srcUrl, type, AIpercent, isAI, message);
+
+              // 在圖片上添加標籤
+              // addLabelToImage(img, isAI);
+              // updateFloatingButton(results);
+            } else {
+              console.error("Error from AI:", response.error);
+            }
+          } else {
+            console.error("No response received from background script.");
+          }
+        }
+      );
+    };
   } catch (error) {
-    console.error("Error detecting AI content:", error);
-    alert("Error detecting content. Please try again later.");
+    console.error("Error converting image to Blob", error);
   }
 }
 
@@ -58,7 +86,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "updateYouTubeMenu") {
     updateYouTubeContextMenu(request.hasYouTubeVideos);
   }
-  
+
   if (request.action === "sendImageToBackend") {
     const base64Image = request.base64Image;
     const fileName = request.fileName;
@@ -81,7 +109,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         return response.json();
       })
@@ -211,22 +239,22 @@ function analyzeVideo(videoUrl) {
   fetch(apiEndpoint, {
     method: "POST",
     headers: headers,
-    body: JSON.stringify({ videoUrl })
+    body: JSON.stringify({ videoUrl }),
   })
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       if (data.success) {
         console.log("Analysis result:", data);
       } else {
         console.error("Analysis failed:", data.error);
       }
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Error analyzing video:", error);
     });
 }
