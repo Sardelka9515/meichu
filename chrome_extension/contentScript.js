@@ -190,7 +190,7 @@ function updateFloatingButton(results) {
   badge.textContent = results.length;
 }
 
-// 在頁面插入浮動按鈕和檢測結果
+// 在頁面插入浮動按鈕和檢測結果 (old)
 // function addFloatingButton(results) {
 //   const button = document.createElement("button");
 //   button.id = "ai-detection-result-button";
@@ -382,7 +382,7 @@ function addFloatingButton(results) {
   document.head.appendChild(style);
 }
 
-// 顯示檢測結果的模態對話框
+// 顯示檢測結果的模態對話框 (old)
 // function showResultsModal(results) {
 //   // Create modal container
 //   const modal = document.createElement("div");
