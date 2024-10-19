@@ -18,6 +18,7 @@ window.onload = async function () {
 async function runAutoImageDetection() {
   const images = document.querySelectorAll("img");
   const results = [];
+  let effectImageCount = 0;
 
   // 在頁面上添加浮動按鈕
   addFloatingButton(results);
@@ -25,6 +26,7 @@ async function runAutoImageDetection() {
   for (const img of images) {
     if (filteredImages(img)) {
       const srcUrl = img.src;
+      effectImageCount++;
 
       // 印出來讓我看看
       console.log("Checking image:", srcUrl);
@@ -100,6 +102,24 @@ async function runAutoImageDetection() {
       //const accuracy = Math.floor(Math.random() * 100) + 1;
       //const isAI = accuracy > 50;
     }
+  }
+  if (effectImageCount) {
+    // Add a badge to show the number of results
+    const badge = document.createElement("span");
+    badge.id = "ai-detection-result-badge";
+    badge.style.cssText = `
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: #ff4081;
+        color: white;
+        border-radius: 50%;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: bold;
+      `;
+    const greenButton = document.getElementById("ai-detection-result-button");
+    greenButton.appendChild(badge);
   }
 }
 
@@ -229,22 +249,6 @@ function addFloatingButton(results) {
     showResultsModal(results);
   });
 
-  // Add a badge to show the number of results
-  const badge = document.createElement("span");
-  badge.id = "ai-detection-result-badge";
-  badge.style.cssText = `
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #ff4081;
-    color: white;
-    border-radius: 50%;
-    padding: 4px 8px;
-    font-size: 12px;
-    font-weight: bold;
-  `;
-  button.appendChild(badge);
-
   document.body.appendChild(button);
 
   // Optional: Add animation to draw attention
@@ -343,7 +347,9 @@ function showResultsModal(results) {
     resultText.innerHTML = `
       <strong>Image ${index + 1}:</strong> 
       <span>${result.isAI ? "AI Generated" : "Not AI"}</span> 
-      <span style="color: #666;">(The rate of AI generated: ${result.AIpercent}%)</span>
+      <span style="color: #666;">(The rate of AI generated: ${
+        result.AIpercent
+      }%)</span>
     `;
 
     const expandButton = document.createElement("button");
