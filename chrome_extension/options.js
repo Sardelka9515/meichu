@@ -13,6 +13,9 @@ window.onload = function () {
   const endTimeInput = document.getElementById("endTime");
   const dropArea = document.getElementById("dropArea");
   const fileInput = document.getElementById("fileInput");
+  const clearBtn = document.getElementById("clearBtn");
+  const detectBtn = document.getElementById("detectBtn");
+  const preview = document.getElementById("preview");
 
   navLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
@@ -30,13 +33,14 @@ window.onload = function () {
   // Load saved settings from Chrome storage
   chrome.storage.sync.get(["autoCheck"], (result) => {
     const autoCheckValue = result.autoCheck || "yes";
-    document.getElementById("autoCheckSelect").value = autoCheckValue;
+    // 注意：HTML 中沒有 autoCheckSelect 元素，所以這行可能需要移除或更新
+    // document.getElementById("autoCheckSelect").value = autoCheckValue;
   });
 
   dropAreaClick();
 
   // AI detection button logic
-  document.getElementById("detectBtn").addEventListener("click", async () => {
+  detectBtn.addEventListener("click", async () => {
     const file = fileInput.files[0];
 
     if (!file) {
@@ -52,9 +56,6 @@ window.onload = function () {
 
     await simulateProgressTo(85, 3000);
 
-    // const isAI = Math.random() < 0.5; // 隨機生成是否為 AI 生成，50% 機率
-    // alert(isAI ? "AI Generated" : "Not AI");
-
     await detectAIContentInOptionsJs(file, "image");
   });
 
@@ -69,6 +70,7 @@ window.onload = function () {
     fileInput.value = ""; // 重置 file input
 
     uploadText.textContent = "拖放圖片或視頻到這裡，或者點擊上傳";
+    uploadText.classList.remove("hidden");
   });
 
   youtubeDetectBtn.addEventListener("click", () => {
@@ -105,8 +107,6 @@ window.onload = function () {
 
     console.log("Sending message to background script");
 
-    var youtubeResponse = null;
-
     chrome.runtime.sendMessage(
       {
         action: "checkVideoAI",
@@ -127,6 +127,9 @@ window.onload = function () {
 };
 
 function dropAreaClick() {
+  const dropArea = document.getElementById("dropArea");
+  const fileInput = document.getElementById("fileInput");
+
   // 監聽檔案選擇事件
   fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
@@ -138,7 +141,7 @@ function dropAreaClick() {
   dropArea.addEventListener("click", () => fileInput.click());
   dropArea.addEventListener("dragover", (e) => {
     e.preventDefault();
-    dropArea.style.backgroundColor = "rgba(74, 144, 226, 0.2)";
+    dropArea.style.backgroundColor = "rgba(47, 94, 126, 0.2)";
   });
 
   dropArea.addEventListener("dragleave", () => {
@@ -150,12 +153,17 @@ function dropAreaClick() {
     dropArea.style.backgroundColor = "";
     if (e.dataTransfer.files.length) {
       fileInput.files = e.dataTransfer.files;
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) {
+        showPreview(file);
+      }
     }
   });
 }
 
 // 新增圖片預覽的函數
 function showPreview(file) {
+  const preview = document.getElementById("preview");
   const reader = new FileReader();
   reader.onload = function (e) {
     preview.src = e.target.result; // 將上傳檔案的 URL 設為圖片來源
@@ -207,7 +215,7 @@ async function detectAIContentInOptionsJs(file, type) {
               (artificial * 100) / (human + artificial)
             );
             const message = isAI ? "AI generated" : "not AI generated";
-            const details = `${human}% human <br> ${artificial}% artificial`;
+            const details = `${human}% human | ${artificial}% artificial`;
 
             // API 回傳後立即完成 100%
             updateProgress(100);
@@ -217,8 +225,6 @@ async function detectAIContentInOptionsJs(file, type) {
             uploadText.textContent = "檢測完成，請查看下方結果";
             uploadText.classList.remove("hidden");
 
-            // alert(`The ${type} is ${message}`);
-            // alert(`The ${type} is ${message} (${AIpercent}% AI)`);
             console.log(type, AIpercent, isAI, message, details);
           } else {
             console.error("Error from AI:", response.error);
@@ -264,7 +270,6 @@ function getVideoResult(videoId) {
     );
   } catch (error) {
     console.error("Error in getVideoResult", error);
-  } finally {
   }
 }
 
@@ -287,12 +292,19 @@ function simulateProgressTo(target, duration) {
 
 // 更新進度條的寬度
 function updateProgress(percent) {
+  const progressFill = document.getElementById("progressFill");
+  const progressText = document.getElementById("progressText");
   progressFill.style.width = percent + "%";
   progressText.textContent = Math.round(percent) + "%";
 }
 
 // 重設進度條和上傳區域
 function resetProgress() {
+  const progressFill = document.getElementById("progressFill");
+  const progressText = document.getElementById("progressText");
+  const progressBar = document.getElementById("progressBar");
+  const uploadText = document.getElementById("uploadText");
+
   progressFill.style.width = "0%";
   progressText.textContent = "0%";
   progressBar.classList.add("hidden");
@@ -302,9 +314,10 @@ function resetProgress() {
 // 顯示 API 檢測結果
 function showResponse(response) {
   console.log("I am here in showResponse");
+  const responseArea = document.getElementById("responseArea");
+  const resultText = document.getElementById("resultText");
+
   responseArea.classList.remove("hidden");
-  // aiBar.classList.remove("hidden");
-  // aiFill.classList.remove("hidden");
 
   const artificial = Math.round(response.result.artificial * 100);
   const human = Math.round(response.result.human * 100);
@@ -320,7 +333,6 @@ function showResponse(response) {
     .querySelector(".aiOrHumanFill")
     .style.setProperty("--human-percentage", `${humanPercentage}%`);
 
-  // resultText.textContent = message;
   resultText.innerHTML = `${message}<br>${human}% human | ${artificial}% artificial`;
 }
 
