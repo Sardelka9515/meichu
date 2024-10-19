@@ -4,6 +4,8 @@ import cv2
 import pathlib
 from typing import List
 from .models import *
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from video_detect import settings
 
 video_detect = pipeline("image-classification", "umm-maybe/AI-image-detector")
 sdxl_detect = pipeline("image-classification", "Organika/sdxl-detector")
@@ -56,14 +58,27 @@ def classify_video(images: List[str], task: VideoTask) -> List[List]:
     results = []
     analyzed = 0.0
     total = len(images)
-    for imgPath in images:
+
+    def classify_and_collect(imgPath):
         print('classifying ' + imgPath)
         result = classify_image(imgPath, video_detect)
         result['image'] = '/' + imgPath
-        results.append(result)
-        print(result)
-        analyzed += 1
-        task.progress = analyzed/total
+        return result
+
+    with ThreadPoolExecutor(max_workers=settings.MAX_VIDEO_WORKERS) as executor:
+        future_to_img = {executor.submit(
+            classify_and_collect, imgPath): imgPath for imgPath in images}
+
+        for future in as_completed(future_to_img):
+            imgPath = future_to_img[future]
+            try:
+                result = future.result()
+                results.append(result)
+                print(result)
+            except Exception as exc:
+                print(f'{imgPath} generated an exception: {exc}')
+            analyzed += 1
+            task.progress = analyzed / total
 
     return results
 
