@@ -16,8 +16,8 @@ CORS(app)
 db_config = {
     'user': 'root',
     'password': 'my-secret-pw',
-    'host': 'localhost',
-    'port': 3300,
+    'host': 'dev-db',
+    'port': 3306,
     'database': 'test_db',
     'autocommit': True,  # Ensures immediate commit
     'connection_timeout': 1200,  # Set an appropriate timeout
@@ -27,7 +27,7 @@ db_config = {
 
 # Redis 配置
 redis_config = {
-    'host': 'localhost',
+    'host': 'redis',
     'port': 6379,
     'db': 0
 }
@@ -72,9 +72,10 @@ db_conn.close()
 # 設定模型 API URL
 MODEL_API_URL = "http://localhost:3000/inference"
 VIDEO_API_URL = "https://meichu-video.sausagee.party"
-AUDIO_API_URL = "http://localhost:5000/uploader"
-Image_API_URL_LGRAD = "http://localhost:3000/inference"
-Image_API_URL_UNIVFD = "http://localhost:3009/inference"
+AUDIO_API_URL = "http://voice-api-server:5000/uploader"
+Image_API_URL_LGRAD = "https://meichu-image1.sausagee.party/inference"
+Image_API_URL_UNIVFD = "https://meichu-image2.sausagee.party/inference"
+Image_API_URL_SAUSAGEE = "https://meichu-video.sausagee.party/analyze/image"
 
 # 設定 API key（直接硬編碼）
 API_KEY = "aWxvdmVzYXVzYWdl"
@@ -88,6 +89,10 @@ def require_api_key(func):
             return jsonify({"error": "Unauthorized: API key is missing or incorrect", "success": False}), 403
         return func(*args, **kwargs)
     return api_key_check
+
+@app.route('/api/test', methods=['get'])
+def test():
+    return jsonify({"message": "Hello, World!"})
 
 @app.route('/api/analyze/image', methods=['POST'])
 @require_api_key
@@ -191,7 +196,7 @@ def audio_detect():
         result = redis_conn.get(file_hash)
         if result:
             result_json = json.loads(result.decode())
-            return jsonify({"result": result_json, "success": True})
+            return jsonify({"results": result_json, "success": True})
         else:
             # 將文件作為附件傳送給 API
             file.seek(0)  # 重置文件指針
@@ -214,7 +219,7 @@ def audio_detect():
             db_cursor.close()
             db_conn.close()
         
-        results.append({"filename": file.filename, "result": result})
+        # results.append({"filename": file.filename, "result": result})
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")
         return jsonify({"error": "Model API error", "success": False}), 500
@@ -227,9 +232,9 @@ def audio_detect():
     finally:
         redis_conn.close()
     
-    return jsonify({"results": results, "success": True})
+    return jsonify({"results": result, "success": True})
 
-@app.route('/api/analyze/image1', methods=['POST'])
+@app.route('/api/analyze/image1', methods=['POST']) #LGRAD (for test only)
 def image_analysis_1():
     if 'img' not in request.files:
         return jsonify({"error": "No image", "success": False}), 400
@@ -259,7 +264,7 @@ def image_analysis_1():
     
     return jsonify({"results": result, "success": True})
 
-@app.route('/api/analyze/image2', methods=['POST'])
+@app.route('/api/analyze/image2', methods=['POST']) #UNIVFD (for test only)
 def image_analysis_2():
     if 'img' not in request.files:
         return jsonify({"error": "No image", "success": False}), 400
@@ -289,5 +294,132 @@ def image_analysis_2():
     
     return jsonify({"results": result, "success": True})
 
+@app.route('/api/analyze/image3', methods=['POST']) #SAUSAGEE (for test only)
+def image_analysis_3():
+    if 'image' not in request.files:
+        return jsonify({"error": "No image", "success": False}), 400
+    
+    file = request.files['image']
+    if not file:
+        return jsonify({"error": "No selected file", "success": False}), 400
+    
+    try:
+        files_to_send = {'image': (file.filename, file.stream, file.mimetype)}
+        response = requests.post(f"{Image_API_URL_SAUSAGEE}", files=files_to_send, headers={"X-API-KEY": "aWxvdmVzYXVzYWdl"})
+        response.raise_for_status()  # 檢查 HTTP 請求是否成功
+        result = response.json()  # 獲取模型 API 返回的結果
+        print(result)
+        # ai_probability = result[0]["result_array"][0]
+        # print(f"AI probability: {ai_probability}")
+
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+        return jsonify({"error": "Model API error", "success": False}), 500
+    except json.JSONDecodeError as json_err:
+        print(f"JSON decode error occurred: {json_err}")
+        return jsonify({"error": "JSON decode error", "success": False}), 500
+    except Exception as err:
+        print(f"Other error occurred: {err}")
+        return jsonify({"error": "Unexpected error", "success": False}), 500
+    
+    return jsonify({"results": result, "success": True})
+
+@app.route('/api/analyze/img', methods=['POST']) 
+def img_analysis():
+    if 'img' not in request.files:
+        return jsonify({"error": "No image", "success": False}), 400
+    
+    file = request.files['img']
+    if not file:
+        return jsonify({"error": "No selected file", "success": False}), 400
+    
+    redis_conn = redis.StrictRedis(**redis_config)
+    result = []
+
+    try:
+        # 對文件做Hash，然後檢查 Redis 是否有快取
+        file.seek(0)  # 確保讀取文件的開頭
+        file_hash = hashlib.sha256(file.read()).hexdigest()
+        result = redis_conn.get(file_hash)
+        if result:
+            result_json = json.loads(result.decode())
+            return jsonify({"results": result_json, "success": True})
+        else:
+            try:
+                success_response_amount = 0
+                output_lgrad, output_univfd, output_sausagee = 0, 0, 0
+
+                # 發送到 LGRAD API
+                file.seek(0)  # 確保讀取文件的開頭
+                files_to_send = {'img': (file.filename, file.stream, file.mimetype)}
+                try:
+                    response_lgrad = requests.post(f"{Image_API_URL_LGRAD}", files=files_to_send)
+                    if response_lgrad.status_code == 200:
+                        success_response_amount += 1
+                        result_lgrad = response_lgrad.json()
+                        print(result_lgrad)
+                        output_lgrad = result_lgrad[0]["output"][0]
+                except Exception as err:
+                    print(f"Error occurred in LGRAD request: {err}")
+
+                # 發送到 UNIVFD API
+                file.seek(0)  # 再次重置文件指針
+                files_to_send = {'img': (file.filename, file.stream, file.mimetype)}
+                try:
+                    response_univfd = requests.post(f"{Image_API_URL_UNIVFD}", files=files_to_send)
+                    if response_univfd.status_code == 200:
+                        success_response_amount += 1
+                        result_univfd = response_univfd.json()
+                        output_univfd = result_univfd[0]["output"][0]
+                except Exception as err:
+                    print(f"Error occurred in UNIVFD request: {err}")
+
+                # 發送到 SAUSAGEE API
+                file.seek(0)  # 再次重置文件指針
+                files_to_send_sausagee = {'image': (file.filename, file.stream, file.mimetype)}
+                try:
+                    response_sausagee = requests.post(f"{Image_API_URL_SAUSAGEE}", files=files_to_send_sausagee, headers={"X-API-KEY": "aWxvdmVzYXVzYWdl"})
+                    if response_sausagee.status_code == 200:
+                        success_response_amount += 1
+                        result_sausagee = response_sausagee.json()
+                        print(result_sausagee)
+                        output_sausagee = result_sausagee["artificial"] / (result_sausagee["artificial"] + result_sausagee["human"])
+                except Exception as err:
+                    print(f"Error occurred in SAUSAGEE request: {err}")
+
+                print(f"success_response_amount: {success_response_amount}")
+
+                ai_probability = (output_lgrad + output_univfd + output_sausagee) / success_response_amount
+
+                fake_amount = 0
+                if output_lgrad > 0.5:
+                    fake_amount += 1
+                if output_univfd > 0.5:
+                    fake_amount += 1
+                if output_sausagee > 0.5:
+                    fake_amount += 1
+
+                result = [{"output_lgrad": output_lgrad, "output_univfd": output_univfd, "output_sausagee": output_sausagee, "ai_probability": ai_probability, "fake_amount": fake_amount}]
+                # 將結果存入 Redis 作為快取
+                redis_conn.setex(file_hash, 1800, json.dumps(result))
+
+                # 將結果存入資料庫
+                db_conn, db_cursor = connect_mysql(db_config)
+                insert_sql = "INSERT INTO fake_detection_record (filename, filetype, ai_probability, record_time) VALUES (%s, %s, %s, NOW())"
+                db_cursor.execute(insert_sql, (file.filename, "image", ai_probability,))
+                db_conn.commit()
+                db_cursor.close()
+                db_conn.close()
+
+            except Exception as err:
+                print(f"Other error occurred: {err}")
+                return jsonify({"error": "Unexpected error", "success": False}), 500
+    except Exception as err:
+        print(f"Other error occurred: {err}")
+        return jsonify({"error": "Unexpected error", "success": False}), 500
+    finally:
+        redis_conn.close()
+    return jsonify({"results": result, "success": True})
+
 if __name__ == '__main__':
-    app.run(port=5005, debug=True)
+    app.run(port=5000, debug=True)
