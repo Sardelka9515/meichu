@@ -64,9 +64,7 @@ window.onload = function () {
 
     preview.src = ""; // 清除圖片來源
     preview.classList.add("hidden"); // 隱藏預覽圖片
-
-    responseArea.innerHTML = "";
-    responseArea.classList.add("hidden");
+    responseArea.classList.add("hidden"); // 隱藏檢測結果
 
     fileInput.value = ""; // 重置 file input
 
@@ -240,6 +238,7 @@ async function detectAIContentInOptionsJs(file, type) {
     console.error("Error converting image to Base64", error);
     responseArea.innerHTML = "<p>檢測失敗，請稍後再試。</p>";
     responseArea.classList.remove("hidden");
+    responseArea.style.display = "block";
   } finally {
     // 重設進度條和文字
     setTimeout(resetProgress, 1000);
