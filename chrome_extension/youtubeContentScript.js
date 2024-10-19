@@ -68,20 +68,31 @@ function handleAIDetectionClick() {
     console.log("User cancelled detection");
     return;
   }
+  var args = {
+    url: window.location.href,
+    async: true,
+    download_start: parseTime(startTime),
+    download_end: endTimeSeconds,  
+    sample_count: 50
+  };
 
   console.log("Sending message to background script");
   chrome.runtime.sendMessage(
     {
-      action: "checkYouTubeAI",
-      videoId: videoId,
-      startTime: parseTime(startTime),
-      endTime: endTimeSeconds,
+      action: "checkVideoAI",
+      data: args
     },
     (response) => {
-      console.log("Received response from background script", response);
+      console.log("Received response from background script: " + JSON.stringify(response));
       if (response) {
-        showResult(response, startTime, endTime);
-      } else {
+        if(response.status === "completed") {
+          showResult(response.result, startTime, endTime);
+        }
+        else{
+          alert("id: " + response.id + ", status: " + response.status);
+        }
+      } 
+      else {
         console.error("Detection failed");
         alert("檢測失敗，請稍後再試");
       }

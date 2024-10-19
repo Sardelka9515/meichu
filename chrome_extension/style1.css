@@ -1,0 +1,153 @@
+/* Basic reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: transparent; /* Transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container: Rounded with only a light green border */
+.container {
+    background-color: #E7E262; /* Background for content only */
+    border-radius: 20px; /* Rounded corners */
+    padding: 20px;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    border: 10px solid #a9ae4f; /* Light green border */
+    box-shadow: none; /* Ensure no shadow for clean look */
+}
+
+/* Circular frame around the PNG image with a green border */
+.circle-frame {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%; /* Make it a perfect circle */
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border: 6.5px solid #a9ae4f; /* Added green border around the image */
+}
+
+.circle-frame img {
+    width: 100%;
+    height: auto;
+}
+
+/* Toggle buttons */
+.toggle-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background-color: #2F5E7E;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: none; /* Ensure no box-shadow */
+}
+
+.toggle label {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Switch toggle button */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #87b82b;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* Upload section */
+.upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Combined upload button with hover effect */
+.upload-combined-button {
+    background-color: #2F5E7E; /* Color change on hover */
+    color: white;
+    border: none; /* No border to avoid boxy appearance */
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.upload-combined-button span {
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Hover effect for the upload section */
+.upload-section:hover .upload-combined-button {
+    background-color: #6e96b4;
+}
