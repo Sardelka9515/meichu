@@ -150,7 +150,7 @@ window.onload = function () {
   });
 
     const videoUrl = getQueryParameter("videoUrl");
-    const currentTime = getQueryParameter("currentTime");
+    const currentTime = Number(getQueryParameter("currentTime"));
 
     if (videoUrl) {
         document.getElementById("youtubeLink").value = videoUrl;
