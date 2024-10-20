@@ -83,10 +83,6 @@
                     <label for="endTime">結束時間：</label>
                     <input type="text" id="endTime" placeholder="HH:MM:SS">
                 </div>
-                <div id="videoStatusTextContainer">
-                    <h3 style="text-align:center; display: inline;" id="videoStatusText"></h3>
-                    <h3 id="videoLoadingSpinner" class="spinner" style="display: none;"></h3>
-                </div>
                 <div id="videoProgressBar" class="hidden">
                     <div id="videoProgressFill" style="width: 0%">
                     </div>
@@ -95,6 +91,10 @@
                     <div class="aiOrHumanBar" id="video-result-bar">
                         <div class="aiOrHumanFill" id="video-result-fill"></div>
                     </div>
+                </div>
+                <div id="videoStatusTextContainer">
+                    <h3 style="text-align:center; display: inline;" id="videoStatusText"></h3>
+                    <h3 id="videoLoadingSpinner" class="spinner" style="display: none;"></h3>
                 </div>
                 <button id="youtubeDetectBtn">開始檢測</button>
             </div>
