@@ -54,59 +54,18 @@ async function runAutoImageDetection() {
                 if (response.success) {
                   console.log("AI analysis result:", response.result);
 
-                  // 假設 API 返回的數據中包含 accuracy 和 isAI
                   const artificial = Math.round(
                     response.result.results[0].output_sausagee * 100
                   );
-                  console.log("artificial: ", artificial);
+                  console.log("AI rate: ", artificial);
                   const human = 100 - artificial;
                   const isAI = artificial > human;
                   const AIpercent = Math.round(
                     (artificial * 100) / (human + artificial)
                   );
-                  const aiOrNot = isAI ? "是 AI 生成的" : "不是 AI 生成的";
-                  // const details =
-                  //   human + "% human <br> " + artificial + "% artificial";
-                  const output_lgrad = Math.round(
-                    response.result.results[0].output_lgrad * 100
-                  );
-
-                  const output_univfd = Math.round(
-                    response.result.results[0].output_univfd * 100
-                  );
-
-                  const artificial_avg = Math.round(
-                    response.result.results[0].ai_probability * 100
-                  );
-
-                  // const details =
-                  //   artificial +
-                  //   "% output_sausagee <br>" +
-                  //   output_lgrad +
-                  //   "% lgrad <br>" +
-                  //   output_univfd +
-                  //   "% univfd";
-
+                  const message = isAI ? "AI generated" : "not AI generated";
                   const details =
-                    "我們的香腸模型預測這張圖片 " +
-                    aiOrNot +
-                    "（AI 機率: " +
-                    artificial +
-                    "%）" +
-                    "<br><br>" +
-                    "其他模型給予的判斷：" +
-                    "<br>" +
-                    "&nbsp&nbsp Lgrad 模型：" +
-                    output_lgrad +
-                    "%" +
-                    "<br>" +
-                    "&nbsp&nbsp Univfd 模型：" +
-                    output_univfd +
-                    "%" +
-                    "<br>" +
-                    "&nbsp&nbsp 三個模型平均機率：" +
-                    artificial_avg +
-                    "%";
+                    human + "% human <br> " + artificial + "% artificial";
 
                   if (isAI) {
                     img.style.border = "4px solid red"; // AI 生成圖片
@@ -119,15 +78,9 @@ async function runAutoImageDetection() {
                     url: srcUrl,
                     isAI: isAI,
                     artificial: artificial,
-                    aiOrNot: aiOrNot,
                     human: human,
                     details: details,
-                    artificial_avg: artificial_avg,
-                    output_lgrad: output_lgrad,
-                    output_univfd: output_univfd,
                   });
-
-                  console.log("results: ", results);
 
                   // 在圖片上添加標籤
                   addLabelToImage(img, isAI);

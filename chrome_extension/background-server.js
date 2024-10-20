@@ -290,8 +290,8 @@ function analyzeVideo(videoUrl) {
 
 function getVideoResult(videoId) {}
 
-// 偵測 AI 內容
 /*
+// 偵測 AI 內容
 async function detectAIContent(srcUrl, type) {
   // 模擬結果
   const accuracy = Math.floor(Math.random() * 100); // 隨機生成準確度
