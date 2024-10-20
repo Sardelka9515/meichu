@@ -139,16 +139,16 @@ window.onload = function () {
     );
   });
 
-  const youtubeUrl = getQueryParameter("youtubeUrl");
-  const currentTime = getQueryParameter("currentTime");
+    const youtubeUrl = getQueryParameter("youtubeUrl");
+    const currentTime = getQueryParameter("currentTime");
 
-  if (youtubeUrl) {
-    document.getElementById("youtubeLink").value =
-      decodeURIComponent(youtubeUrl); // 填充输入框
-  }
-  if (currentTime) {
-    document.getElementById("startTime").value = formatTime(currentTime); // 填充播放时间
-  }
+    if (videoUrl) {
+        document.getElementById("youtubeLink").value = videoUrl;
+    }
+    if (currentTime) {
+        document.getElementById("startTime").value = formatTime(currentTime);
+        document.getElementById("endTime").value = formatTime(currentTime + 10);
+    }
 
   chrome.storage.sync.get(["lastVideoResult"], (stuff) => {
     if (stuff.lastVideoResult) {
