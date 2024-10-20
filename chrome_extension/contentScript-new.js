@@ -64,9 +64,49 @@ async function runAutoImageDetection() {
                   const AIpercent = Math.round(
                     (artificial * 100) / (human + artificial)
                   );
-                  const message = isAI ? "AI generated" : "not AI generated";
+                  const aiOrNot = isAI ? "AI 生成的" : "不是 AI 生成的";
+                  // const details =
+                  //   human + "% human <br> " + artificial + "% artificial";
+                  const output_lgrad = Math.round(
+                    response.result.results[0].output_lgrad * 100
+                  );
+
+                  const output_univfd = Math.round(
+                    response.result.results[0].output_univfd * 100
+                  );
+
+                  const artificial_avg = Math.round(
+                    response.result.results[0].ai_probability * 100
+                  );
+
+                  // const details =
+                  //   artificial +
+                  //   "% output_sausagee <br>" +
+                  //   output_lgrad +
+                  //   "% lgrad <br>" +
+                  //   output_univfd +
+                  //   "% univfd";
+
                   const details =
-                    human + "% human <br> " + artificial + "% artificial";
+                    "我們的香腸模型預測這張圖片是 " +
+                    aiOrNot +
+                    "(AI 機率: " +
+                    artificial +
+                    "%)" +
+                    "<br><br>" +
+                    "其他模型給予的判斷：" +
+                    "<br>" +
+                    "Lgrad 模型：" +
+                    output_lgrad +
+                    "%" +
+                    "<br>" +
+                    "Univfd 模型：" +
+                    output_univfd +
+                    "%" +
+                    "<br>" +
+                    "三個模型平均機率：" +
+                    artificial_avg +
+                    "%";
 
                   if (isAI) {
                     img.style.border = "4px solid red"; // AI 生成圖片
@@ -79,9 +119,15 @@ async function runAutoImageDetection() {
                     url: srcUrl,
                     isAI: isAI,
                     artificial: artificial,
+                    aiOrNot: aiOrNot,
                     human: human,
                     details: details,
+                    artificial_avg: artificial_avg,
+                    output_lgrad: output_lgrad,
+                    output_univfd: output_univfd,
                   });
+
+                  console.log("results: ", results);
 
                   // 在圖片上添加標籤
                   addLabelToImage(img, isAI);

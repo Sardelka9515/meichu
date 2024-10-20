@@ -15,7 +15,7 @@
   ],
   "host_permissions": ["http://localhost/*", "<all_urls>"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background-new.js"
   },
   "content_scripts": [
     {
@@ -24,7 +24,7 @@
     },
     {
       "matches": ["<all_urls>"],
-      "js": ["contentScript.js"]
+      "js": ["contentScript-new.js"]
     }
   ],
   "action": {
