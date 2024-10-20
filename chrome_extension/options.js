@@ -103,17 +103,6 @@ window.onload = function () {
       alert("請輸入正確的時間格式 (HH:MM:SS)。");
       return;
     }
-
-    document.querySelector(
-      "#examine p:nth-child(2)"
-    ).textContent = `影片來源: ${youtubeLink}`;
-    document.querySelector(
-      "#examine p:nth-child(3)"
-    ).textContent = `開始時間: ${startTime}`;
-    document.querySelector(
-      "#examine p:nth-child(4)"
-    ).textContent = `結束時間: ${endTime}`;
-
     var args = {
       url: youtubeLink,
       async: true,
@@ -149,23 +138,44 @@ window.onload = function () {
     );
   });
 
-    const videoUrl = getQueryParameter("videoUrl");
-    const currentTime = Number(getQueryParameter("currentTime"));
+  const videoUrl = getQueryParameter("videoUrl");
+  const currentTime = Number(getQueryParameter("currentTime"));
 
-    if (videoUrl) {
-        document.getElementById("youtubeLink").value = videoUrl;
-    }
-    if (currentTime) {
-        document.getElementById("startTime").value = formatTime(currentTime);
-        document.getElementById("endTime").value = formatTime(currentTime + 10);
-    }
+  if (videoUrl) {
+    document.getElementById("youtubeLink").value = videoUrl;
+  }
+  if (currentTime) {
+    document.getElementById("startTime").value = formatTime(currentTime);
+    document.getElementById("endTime").value = formatTime(currentTime + 10);
+  }
 
   chrome.storage.sync.get(["lastVideoResult"], (stuff) => {
     if (stuff.lastVideoResult) {
-      drawChart(stuff.lastVideoResult);
+      displayVideoResult(stuff.lastVideoResult);
     }
   });
 };
+
+function displayVideoResult(response) {
+  document.querySelector(
+    "#examine p:nth-child(2)"
+  ).textContent = `影片來源: ${response.url}`;
+  document.querySelector(
+    "#examine p:nth-child(3)"
+  ).textContent = `開始時間: ${formatTime(response.download_start)}`;
+  document.querySelector(
+    "#examine p:nth-child(4)"
+  ).textContent = `結束時間: ${formatTime(response.download_end)}`;
+
+  percentAI = calculateAIRate(response.results);
+  const message = percentAI > 50 ? "AI generated" : "Not AI generated";
+
+  document.querySelector(
+    "#examine p:nth-child(5)"
+  ).textContent = `檢測結果: ${message}`;
+
+  drawChart(response.results);
+}
 
 // 檢查 YouTube 連結格式是否正確的函式
 function isValidYouTubeLink(url) {
@@ -317,8 +327,6 @@ async function detectAIContentInOptionsJs(file, type) {
   }
 }
 
-var finalVideoResult = null;
-
 // 更新進度條的寬度
 function updateProgress(percent) {
   const progressFill = document.getElementById("progressFill");
@@ -386,12 +394,6 @@ function showVideoResponse(percentAI) {
   resultFill.style.setProperty("--human-percentage", `${100 - percentAI}%`);
   videoStatusText.textContent = `${100 - percentAI}% Human | ${percentAI}% AI`;
   videoResponseArea.classList.remove("hidden");
-
-  const message = percentAI > 50 ? "AI generated" : "Not AI generated";
-
-  document.querySelector(
-    "#examine p:nth-child(5)"
-  ).textContent = `檢測結果: ${message}`;
 }
 
 // AI 影片檢測 用id拿取/result/video
@@ -414,12 +416,9 @@ function getVideoResult(videoId) {
             youtubeDetectBtn.disabled = false;
             showVideoResponse(calculateAIRate(response.results));
             videoLoadingSpinner.style.display = "none";
-            finalVideoResult = response.results;
-            chrome.storage.sync.set(
-              { lastVideoResult: finalVideoResult },
-              () => {}
-            );
-            drawChart(finalVideoResult);
+            finalVideoResult = response;
+            chrome.storage.sync.set({ lastVideoResult: response }, () => {});
+            displayVideoResult(response);
           } else if (response.status === "error") {
             console.error("Error from AI:", response.error);
             videoStatusText.textContent = "檢測失敗";
