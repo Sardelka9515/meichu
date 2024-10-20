@@ -104,6 +104,16 @@ window.onload = function () {
       return;
     }
 
+    document.querySelector(
+      "#examine p:nth-child(2)"
+    ).textContent = `影片來源: ${youtubeLink}`;
+    document.querySelector(
+      "#examine p:nth-child(3)"
+    ).textContent = `開始時間: ${startTime}`;
+    document.querySelector(
+      "#examine p:nth-child(4)"
+    ).textContent = `結束時間: ${endTime}`;
+
     var args = {
       url: youtubeLink,
       async: true,
@@ -376,6 +386,12 @@ function showVideoResponse(percentAI) {
   resultFill.style.setProperty("--human-percentage", `${100 - percentAI}%`);
   videoStatusText.textContent = `${100 - percentAI}% Human | ${percentAI}% AI`;
   videoResponseArea.classList.remove("hidden");
+
+  const message = percentAI > 50 ? "AI generated" : "Not AI generated";
+
+  document.querySelector(
+    "#examine p:nth-child(5)"
+  ).textContent = `檢測結果: ${message}`;
 }
 
 // AI 影片檢測 用id拿取/result/video
