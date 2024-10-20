@@ -139,7 +139,7 @@ window.onload = function () {
     );
   });
 
-    const youtubeUrl = getQueryParameter("youtubeUrl");
+    const videoUrl = getQueryParameter("videoUrl");
     const currentTime = getQueryParameter("currentTime");
 
     if (videoUrl) {
