@@ -389,6 +389,10 @@ button:hover {
     font-size: 1.1rem;
   }
 }
+.highlight {
+  font-weight: bold;
+  color: #000;
+}
 
 /* Tooltip 相關樣式 */
 .chartjs-tooltip {
