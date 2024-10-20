@@ -64,7 +64,7 @@ async function runAutoImageDetection() {
                   const AIpercent = Math.round(
                     (artificial * 100) / (human + artificial)
                   );
-                  const aiOrNot = isAI ? "AI 生成的" : "不是 AI 生成的";
+                  const aiOrNot = isAI ? "是 AI 生成的" : "不是 AI 生成的";
                   // const details =
                   //   human + "% human <br> " + artificial + "% artificial";
                   const output_lgrad = Math.round(
@@ -88,23 +88,23 @@ async function runAutoImageDetection() {
                   //   "% univfd";
 
                   const details =
-                    "我們的香腸模型預測這張圖片是 " +
+                    "我們的香腸模型預測這張圖片 " +
                     aiOrNot +
-                    "(AI 機率: " +
+                    "（AI 機率: " +
                     artificial +
-                    "%)" +
+                    "%）" +
                     "<br><br>" +
                     "其他模型給予的判斷：" +
                     "<br>" +
-                    "Lgrad 模型：" +
+                    "&nbsp&nbsp Lgrad 模型：" +
                     output_lgrad +
                     "%" +
                     "<br>" +
-                    "Univfd 模型：" +
+                    "&nbsp&nbsp Univfd 模型：" +
                     output_univfd +
                     "%" +
                     "<br>" +
-                    "三個模型平均機率：" +
+                    "&nbsp&nbsp 三個模型平均機率：" +
                     artificial_avg +
                     "%";
 
