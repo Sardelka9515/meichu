@@ -3,16 +3,22 @@
 ## 關於這個專案
 
 進入擴充功能打開開發者模式，導入 chrome_extension 資料夾
+
 伺服器於 backend 資料夾，使用方式於資料夾中的 README.md
+
 video 的 模型 api 在 video_detect, 實作上我們將其 image 部署在遠端虛擬機上
+
 audio 的 模型 api 在 voice_api，實作上 docker compose Backend 的時候會順便建立
+
 image 的 模型我們共使用三個
 
 1. LGrad 模型 (直接使用中華電信工作坊提供之模型)
 2. UnivFD 模型 (直接使用中華電信工作坊提供之模型)
-3. 與 video 相同
-   實作上，我們將這三個都部署在遠端使用
-   你可以找到 LGrad 模型與 UnivFD 模型於中華電信工作坊提供的連結：
+3. Organika/sdxl-detector (參考自https://huggingface.co/Organika/sdxl-detector)
+
+實作上，我們將這三個都部署在遠端使用
+
+你可以找到 LGrad 模型與 UnivFD 模型於中華電信工作坊提供的連結
 
 ## 特色功能
 
